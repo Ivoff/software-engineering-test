@@ -48,7 +48,7 @@ public class Comment: IEntity
         return new CommentServiceResult()
         {
             Value = false,
-            Result = "User is not the author of the comment.",
+            Result = "User is not the author of the Comment.",
             Comment = null
         };
     }

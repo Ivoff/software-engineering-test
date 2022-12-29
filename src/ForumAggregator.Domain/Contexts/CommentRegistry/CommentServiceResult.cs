@@ -4,7 +4,7 @@ using ForumAggregator.Domain.Shared.Interfaces;
 
 public record CommentServiceResult : IDomainResult<bool>
 {
-    public bool Value { get; init; } = default!;
+    public bool Value { get; init; }
     public string Result { get; init; } = default!;
     public Comment? Comment { get; init; }
 }
