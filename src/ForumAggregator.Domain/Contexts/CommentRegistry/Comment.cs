@@ -7,12 +7,7 @@ public class Comment: IEntity
 {
     // Fields & Properties
 
-    private Guid _comment_id;
-    public Guid Id 
-    { 
-        get => _comment_id; 
-        init => _comment_id = value;
-    }
+    public Guid Id { get; init; }
 
     public Guid PostId { get; init; }
 
@@ -28,7 +23,7 @@ public class Comment: IEntity
 
     private Comment (Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
     {
-        _comment_id = Guid.NewGuid();
+        Id = Guid.NewGuid();
         PostId = postId;
         ParentCommentId = parentCommentId;
         Content = content;
@@ -81,7 +76,7 @@ public class Comment: IEntity
     public static CommentServiceResult Create(Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
     {
         Comment newComment = new Comment(postId, parentCommentId, content, author);
-        bool resultValue = !author.AuthorCannotComment;
+        bool resultValue = !author.CannotComment;
         return new CommentServiceResult()
         {
             Value = resultValue,

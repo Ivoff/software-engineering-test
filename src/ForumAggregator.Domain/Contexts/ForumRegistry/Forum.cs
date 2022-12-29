@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Generic.ForumRegistry;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,8 @@ using ForumAggregator.Domain.Shared.Entities.Moderator;
 public class Forum : IEntity, IAggregateRoot
 {
     // Fields & Properties
-
-    private Guid _forum_id;
-    public Guid Id { 
-        get => _forum_id; 
-        init => _forum_id = value;
-    }
+    
+    public Guid Id { get; init; }
 
     public Guid OwnerId {get; init; }
 
@@ -29,7 +25,7 @@ public class Forum : IEntity, IAggregateRoot
 
     public Forum (Guid ownerId, string name, string description)
     {
-        _forum_id = Guid.NewGuid();
+        Id = Guid.NewGuid();
         OwnerId = ownerId;
         Name = name;
         Description = description;

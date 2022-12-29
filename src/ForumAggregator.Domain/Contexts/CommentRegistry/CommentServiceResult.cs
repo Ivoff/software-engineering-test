@@ -1,6 +1,6 @@
-using ForumAggregator.Domain.Shared.Interfaces;
-
 namespace ForumAggregator.Domain.CommentRegistry;
+
+using ForumAggregator.Domain.Shared.Interfaces;
 
 public record CommentServiceResult : IDomainResult<bool>
 {

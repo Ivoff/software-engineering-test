@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Generic.ForumRegistry;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using ForumAggregator.Domain.Shared.Interfaces;
 

@@ -10,12 +10,7 @@ public class Moderator : IEntity
 {
     // Fields & Properties
     
-    private Guid _moderator_id;
-    public Guid Id 
-    { 
-        get => _moderator_id; 
-        init => _moderator_id = value; 
-    }
+    public Guid Id { get; init; }
 
     public Guid UserId { get; init; }
 
