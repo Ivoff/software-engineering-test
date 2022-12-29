@@ -39,7 +39,7 @@ public class Forum : IEntity, IAggregateRoot
 
     // Methods
 
-    private void AssingOwnerAsModerator()
+    private void AssingOwnerAsModerator ()
     {
         EAuthority[] authorities = {
             EAuthority.BlockFromComment,
@@ -59,7 +59,7 @@ public class Forum : IEntity, IAggregateRoot
 
     public bool EditName (Guid editor, string newName)
     {
-        Moderator? aux = ModeratorCollection.GetModerator(editor);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
@@ -74,7 +74,7 @@ public class Forum : IEntity, IAggregateRoot
 
     public bool EditDescription (Guid editor, string newDescription)
     {
-        Moderator? aux = ModeratorCollection.GetModerator(editor);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
@@ -87,9 +87,9 @@ public class Forum : IEntity, IAggregateRoot
         return false;
     }
 
-    public bool CanDelete(Guid deleter)
+    public bool CanDeleteForum (Guid deleter)
     {
-        Moderator? aux = ModeratorCollection.GetModerator(deleter);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(deleter);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
@@ -98,13 +98,23 @@ public class Forum : IEntity, IAggregateRoot
         return false;
     }
 
-    public ForumServiceResult AddModerator (Guid actor, Guid userIdNewModerator, ICollection<EAuthority> authorities)    
+    public ForumServiceResult AddModerator (Guid actorUserId, Guid newModeratorUserId, ICollection<EAuthority> authorities)    
     {
-        Moderator? aux = ModeratorCollection.GetModerator(actor);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
-            Moderator newModerator = new Moderator(userIdNewModerator, authorities);
-            ModeratorCollection.AddModerator(newModerator);
+            Moderator mod = (Moderator) aux;
+            if (!mod.CheckForAuthority(EAuthority.AddModerator))
+            {
+                return new ForumServiceResult()
+                {
+                    Value = false,
+                    Result = "Actor user has no Authority to add a Moderator."
+                };
+            }
+
+            Moderator newModerator = new Moderator(newModeratorUserId, authorities);
+            ModeratorCollection.AddModerator(newModerator);            
             return new ForumServiceResult()
             {
                 Value = true,
@@ -115,27 +125,87 @@ public class Forum : IEntity, IAggregateRoot
         return new ForumServiceResult()
         {
             Value = false,
-            Result = "User is not a Moderato."
+            Result = "Actor User is not a Moderator."
         };
     }
 
-    public ForumServiceResult UpdateModerator (Guid actor, Guid moderatorId, ICollection<EAuthority> authorities)    
+    public ForumServiceResult UpdateModerator (Guid actorUserId, Guid moderatorId, ICollection<EAuthority> newAuthorities)    
     {
-        Moderator? aux = ModeratorCollection.GetModerator(actor);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
-            ModeratorCollection.UpdateModerator(moderatorId, authorities);
+            Moderator mod = (Moderator) aux;
+            if (!mod.CheckForAuthority(EAuthority.AlterModerator))
+            {
+                return new ForumServiceResult()
+                {
+                    Value = false,
+                    Result = "Moderator has no Authority to alter others Authorities."
+                };
+            }
+
+            Moderator? updated = ModeratorCollection.GetModerator(moderatorId);            
+            if (updated != null)
+            {
+                ModeratorCollection.UpdateModerator(moderatorId, newAuthorities);
+                return new ForumServiceResult()
+                {
+                    Value = true,
+                    Result = "Moderator successfully updated."
+                };
+            }            
+            
             return new ForumServiceResult()
             {
-                Value = true,
-                Result = "Moderator successfully updated."
+                Value = false,
+                Result = "Moderator to be updated not found."
             };
         }
 
         return new ForumServiceResult()
         {
             Value = false,
-            Result = "User is not a Moderator."
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
+    public ForumServiceResult RemoveModerator (Guid actor, Guid moderatorId)
+    {
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actor);
+        if (aux != null)
+        {
+            Moderator mod = (Moderator) aux;
+            if (!mod.CheckForAuthority(EAuthority.DeleteModerator))
+            {
+                return new ForumServiceResult()
+                {
+                    Value = false,
+                    Result = "Actor User has no Authority to remove a Moderator."
+                };
+            }
+
+            Moderator? deleted = ModeratorCollection.GetModerator(moderatorId);
+            if (deleted != null)
+            {
+                ModeratorCollection.RemoveModerator((Moderator)deleted);
+                return new ForumServiceResult()
+                {
+                    Value = true,
+                    Result = "Moderator has been successfully removed."
+                };
+            } 
+
+            return new ForumServiceResult()
+            {
+                Value = false,
+                Result = "Moderator to be removed not found."
+            };       
+        }
+
+        return new ForumServiceResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
         };
     }
 

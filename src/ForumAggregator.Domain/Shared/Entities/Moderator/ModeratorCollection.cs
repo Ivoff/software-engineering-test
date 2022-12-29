@@ -21,27 +21,32 @@ public class ModeratorCollection
 
     // Methods
 
-    public Moderator? GetModerator(Guid userId)
+    public Moderator? GetModeratorByUserId (Guid userId)
     {
         return Moderators.FirstOrDefault(x => x.UserId == userId);
     }
 
-    public ICollection<Moderator?> GetModeratorsWith(EAuthority authority)
+    public Moderator? GetModerator (Guid moderatorId)
+    {
+        return Moderators.FirstOrDefault(x => x.Id == moderatorId);
+    }
+
+    public ICollection<Moderator?> GetModeratorsWith (EAuthority authority)
     {
         return Moderators.Where(x => x.CheckForAuthority(authority)).ToList<Moderator?>();
     }
 
-    public void AddModerator(Moderator newModerator)
+    public void AddModerator (Moderator newModerator)
     {
         Moderators.Add(newModerator);
     }
 
-    public bool RemoveModerator(Moderator delete)
+    public bool RemoveModerator (Moderator deletedModerator)
     {
-        return Moderators.Remove(delete);
+        return Moderators.Remove(deletedModerator);
     }
 
-    public void UpdateModerator(Guid moderatorId, ICollection<EAuthority> authorities)
+    public void UpdateModerator (Guid moderatorId, ICollection<EAuthority> authorities)
     {
         Moderator currModerator = Moderators.First(x => x.Id == moderatorId);
         Moderators.Remove(currModerator);
@@ -52,7 +57,7 @@ public class ModeratorCollection
         Moderators.Add(currModerator);
     }
 
-    public static ModeratorCollection Load(ICollection<Moderator> moderators)
+    public static ModeratorCollection Load (ICollection<Moderator> moderators)
     {
         return new ModeratorCollection() 
         { 

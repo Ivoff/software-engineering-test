@@ -6,9 +6,10 @@ public enum EAuthority
     BlockFromPost = 101,
     AlterForumName = 102,
     AlterForumDescription = 103,
-    DeleteForum = 104,
-    DeleteModerator = 105,
-    DeleteComment = 106,
-    DeletePost = 107,
-    AddModerator = 108
+    AlterModerator = 104,
+    DeleteForum = 105,
+    DeleteModerator = 106,
+    DeleteComment = 107,
+    DeletePost = 108,
+    AddModerator = 109
 }
