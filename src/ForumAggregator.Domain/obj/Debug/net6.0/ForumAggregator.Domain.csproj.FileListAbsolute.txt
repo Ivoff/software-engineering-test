@@ -1,0 +1,12 @@
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/bin/Debug/net6.0/ForumAggregator.Domain.deps.json
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/bin/Debug/net6.0/ForumAggregator.Domain.dll
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/bin/Debug/net6.0/ForumAggregator.Domain.pdb
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.csproj.AssemblyReference.cache
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.AssemblyInfoInputs.cache
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.AssemblyInfo.cs
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.csproj.CoreCompileInputs.cache
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.dll
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/refint/ForumAggregator.Domain.dll
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ForumAggregator.Domain.pdb
+/home/zilas/Documents/csharp/softwareengineeringtest/src/ForumAggregator.Domain/obj/Debug/net6.0/ref/ForumAggregator.Domain.dll

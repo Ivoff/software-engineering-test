@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "ForumAggregator.Domain/1.0.0": {
+        "runtime": {
+          "ForumAggregator.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ForumAggregator.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
