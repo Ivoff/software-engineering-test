@@ -17,6 +17,8 @@ public class Comment: IEntity
 
     public string Content { get; private set; } = default!;    
 
+    public bool Deleted {get; private set; } = default!;
+
     // Constructors
 
     private Comment (){}
@@ -28,12 +30,16 @@ public class Comment: IEntity
         ParentCommentId = parentCommentId;
         Content = content;
         Author = author;
+        Deleted = false;
     }
 
     // Methods
 
     public CommentServiceResult UpdateComment(Guid actor, string content)
     {
+        if (Deleted)
+            return DeletedResult();
+
         if (actor == Author.Id)
         {
             Content = content;
@@ -55,6 +61,9 @@ public class Comment: IEntity
 
     public CommentServiceResult RemoveComment(Guid actor)
     {
+        if (Deleted)
+            return DeletedResult();
+
         if (actor == Author.Id)
         {
             return new CommentServiceResult()
@@ -73,6 +82,16 @@ public class Comment: IEntity
         };
     }
 
+    private CommentServiceResult DeletedResult ()
+    {
+        return new CommentServiceResult()
+        {
+            Value = false,
+            Result = "Comment has been removed.",
+            Comment = null
+        };
+    }
+
     public static CommentServiceResult Create(Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
     {
         Comment newComment = new Comment(postId, parentCommentId, content, author);
@@ -85,7 +104,7 @@ public class Comment: IEntity
         };
     }
     
-    public static Comment Load (Guid commentId, Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
+    public static Comment Load (Guid commentId, Guid postId, Guid? parentCommentId, string content, CommentAuthor author, bool deleted)
     {
         return new Comment()
         {
@@ -93,7 +112,8 @@ public class Comment: IEntity
             PostId = postId,
             ParentCommentId = parentCommentId,
             Content = content,
-            Author = author
+            Author = author,
+            Deleted = deleted
         };        
     }
 }

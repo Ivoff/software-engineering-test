@@ -17,6 +17,8 @@ public class Forum : IEntity, IAggregateRoot
 
     public string Description { get; private set; } = default!;
 
+    public bool Deleted { get; private set; } = default!;
+
     private ModeratorCollection ModeratorCollection { get; init; } = default!;
 
     // Constructors
@@ -31,6 +33,7 @@ public class Forum : IEntity, IAggregateRoot
         Description = description;
         ModeratorCollection = new ModeratorCollection();
         AssingOwnerAsModerator();
+        Deleted = false;
     }
 
     // Methods
@@ -53,8 +56,11 @@ public class Forum : IEntity, IAggregateRoot
         ModeratorCollection.AddModerator(newModerator);
     }
 
-    public bool EditName (Guid editor, string newName)
+    public ForumResult EditName (Guid editor, string newName)
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
@@ -62,14 +68,32 @@ public class Forum : IEntity, IAggregateRoot
             if (mod.CheckForAuthority(EAuthority.AlterForumName))
             {
                 Name = newName;
-                return true;
+                return new ForumResult()
+                {
+                    Value = true,
+                    Result = string.Empty
+                };
             }
+
+            return new ForumResult()
+            {
+                Value = false,
+                Result = "Actor User has no Authority to edit Name."
+            };
         }
-        return false;
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
     }
 
-    public bool EditDescription (Guid editor, string newDescription)
+    public ForumResult EditDescription (Guid editor, string newDescription)
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
@@ -77,32 +101,63 @@ public class Forum : IEntity, IAggregateRoot
             if (mod.CheckForAuthority(EAuthority.AlterForumName))
             {
                 Description = newDescription;
-                return true;
+                return new ForumResult()
+                {
+                    Value = true,
+                    Result = string.Empty
+                };
             }
+
+            return new ForumResult()
+            {
+                Value = false,
+                Result = "Actor User has no Authority to edit Description."
+            };
         }
-        return false;
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
     }
 
-    public bool CanDeleteForum (Guid deleter)
+    public ForumResult CanDeleteForum (Guid deleter)
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(deleter);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
-            return mod.CheckForAuthority(EAuthority.DeleteForum);
+            bool value = mod.CheckForAuthority(EAuthority.DeleteForum);
+            return new ForumResult()
+            {
+                Value = value,
+                Result = value ? string.Empty : "Actor User has no authority to delete the Forum."
+            };
         }
-        return false;
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
     }
 
-    public ForumServiceResult AddModerator (Guid actorUserId, Guid newModeratorUserId, ICollection<EAuthority> authorities)    
+    public ForumResult AddModerator (Guid actorUserId, Guid newModeratorUserId, ICollection<EAuthority> authorities)    
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
             if (!mod.CheckForAuthority(EAuthority.AddModerator))
             {
-                return new ForumServiceResult()
+                return new ForumResult()
                 {
                     Value = false,
                     Result = "Actor user has no Authority to add a Moderator."
@@ -111,29 +166,32 @@ public class Forum : IEntity, IAggregateRoot
 
             Moderator newModerator = new Moderator(newModeratorUserId, authorities);
             ModeratorCollection.AddModerator(newModerator);            
-            return new ForumServiceResult()
+            return new ForumResult()
             {
                 Value = true,
                 Result = "Moderator successfully added."
             };
         }
         
-        return new ForumServiceResult()
+        return new ForumResult()
         {
             Value = false,
             Result = "Actor User is not a Moderator."
         };
     }
 
-    public ForumServiceResult UpdateModerator (Guid actorUserId, Guid moderatorId, ICollection<EAuthority> newAuthorities)    
+    public ForumResult UpdateModerator (Guid actorUserId, Guid moderatorId, ICollection<EAuthority> newAuthorities)    
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
             if (!mod.CheckForAuthority(EAuthority.AlterModerator))
             {
-                return new ForumServiceResult()
+                return new ForumResult()
                 {
                     Value = false,
                     Result = "Moderator has no Authority to alter others Authorities."
@@ -144,36 +202,39 @@ public class Forum : IEntity, IAggregateRoot
             if (updated != null)
             {
                 ModeratorCollection.UpdateModerator(moderatorId, newAuthorities);
-                return new ForumServiceResult()
+                return new ForumResult()
                 {
                     Value = true,
                     Result = "Moderator successfully updated."
                 };
             }            
             
-            return new ForumServiceResult()
+            return new ForumResult()
             {
                 Value = false,
                 Result = "Moderator to be updated not found."
             };
         }
 
-        return new ForumServiceResult()
+        return new ForumResult()
         {
             Value = false,
             Result = "Actor User is not a Moderator."
         };
     }
 
-    public ForumServiceResult RemoveModerator (Guid actor, Guid moderatorId)
+    public ForumResult RemoveModerator (Guid actor, Guid moderatorId)
     {
+        if (Deleted)
+            return DeletedResult();
+
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actor);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
             if (!mod.CheckForAuthority(EAuthority.DeleteModerator))
             {
-                return new ForumServiceResult()
+                return new ForumResult()
                 {
                     Value = false,
                     Result = "Actor User has no Authority to remove a Moderator."
@@ -184,28 +245,37 @@ public class Forum : IEntity, IAggregateRoot
             if (deleted != null)
             {
                 ModeratorCollection.RemoveModerator((Moderator)deleted);
-                return new ForumServiceResult()
+                return new ForumResult()
                 {
                     Value = true,
                     Result = "Moderator has been successfully removed."
                 };
             } 
 
-            return new ForumServiceResult()
+            return new ForumResult()
             {
                 Value = false,
                 Result = "Moderator to be removed not found."
             };       
         }
 
-        return new ForumServiceResult()
+        return new ForumResult()
         {
             Value = false,
             Result = "Actor User is not a Moderator."
         };
     }
 
-    public static Forum Load (Guid forumId, Guid ownerId, string name, string description, ModeratorCollection moderatorCollection)    
+    private ForumResult DeletedResult()
+    {
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Forum has been removed."
+        };
+    }
+
+    public static Forum Load (Guid forumId, Guid ownerId, string name, string description, bool deleted, ModeratorCollection moderatorCollection)    
     {
         return new Forum()
         {
@@ -213,7 +283,8 @@ public class Forum : IEntity, IAggregateRoot
             OwnerId = ownerId,
             Name = name,
             Description = description,
-            ModeratorCollection = moderatorCollection            
+            ModeratorCollection = moderatorCollection,
+            Deleted = deleted
         };
     }
 }

@@ -17,6 +17,8 @@ public class Post : IEntity
 
     public PostAuthor Author { get; init; } = default!;
 
+    public bool Deleted { get; private set; } = default!;
+
     // Constructors
 
     private Post () {}
@@ -32,13 +34,16 @@ public class Post : IEntity
 
     // Methods
 
-    public PostServiceResult UpdatePost (Guid actor, string newTitle, string newContent)
+    public PostResult UpdatePost (Guid actor, string newTitle, string newContent)
     {
+        if (Deleted)
+            return DeletedResult();
+
         if (actor == Author.Id)
         {
             Title = newTitle;
             Content = newContent;
-            return new PostServiceResult()
+            return new PostResult()
             {
                 Value = true,
                 Result = "Post successfully updated.",
@@ -46,7 +51,7 @@ public class Post : IEntity
             };
         }
 
-        return new PostServiceResult()
+        return new PostResult()
         {
             Value = false,
             Result = "User is not the Author of the Post.",
@@ -54,11 +59,14 @@ public class Post : IEntity
         };
     }
 
-    public PostServiceResult RemovePost (Guid actor)
+    public PostResult RemovePost (Guid actor)
     {
+        if (Deleted)
+            return DeletedResult();
+
         if (actor == Author.Id)
         {
-            return new PostServiceResult()
+            return new PostResult()
             {
                 Value = true,
                 Result = string.Empty,
@@ -66,7 +74,7 @@ public class Post : IEntity
             };
         }
 
-        return new PostServiceResult()
+        return new PostResult()
         {
             Value = false,
             Result = "User is not the Author of the Post",
@@ -74,11 +82,21 @@ public class Post : IEntity
         };
     }
 
-    public PostServiceResult Create (Guid forumId, string title, string content, PostAuthor author)
+    private PostResult DeletedResult ()
+    {
+        return new PostResult()
+        {
+            Value = false,
+            Result = "Post has been removed.",
+            Post = null
+        };
+    }
+
+    public PostResult Create (Guid forumId, string title, string content, PostAuthor author)
     {
         Post newPost = new Post(forumId, title, content, author);
         bool resultValue = !author.CannotPost;
-        return new PostServiceResult()
+        return new PostResult()
         {
             Value = resultValue,
             Result = resultValue ? "Post successfully created" : "Post has been blocked from being created",
@@ -86,7 +104,7 @@ public class Post : IEntity
         };
     }
 
-    public static Post Load (Guid postId, Guid forumId, string title, string content, PostAuthor author)
+    public static Post Load (Guid postId, Guid forumId, string title, string content, bool deleted, PostAuthor author)
     {
         return new Post()
         {
@@ -94,7 +112,8 @@ public class Post : IEntity
             ForumId = forumId,
             Title = title,
             Content = content,
-            Author = author
+            Author = author,
+            Deleted = deleted
         };
     }
 }
