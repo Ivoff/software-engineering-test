@@ -20,6 +20,8 @@ public class Forum : IEntity, IAggregateRoot
 
     private ModeratorCollection ModeratorCollection { get; init; } = default!;
 
+    private BlackListedCollection BlackListedCollection { get; init; } = default!;
+
     // Constructors
 
     private Forum () {}
@@ -31,8 +33,10 @@ public class Forum : IEntity, IAggregateRoot
         Name = name;
         Description = description;
         ModeratorCollection = new ModeratorCollection();
-        AssingOwnerAsModerator();
+        BlackListedCollection = new BlackListedCollection();
         Deleted = false;
+
+        AssingOwnerAsModerator();        
     }
 
     // Methods
@@ -121,7 +125,7 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
-    public ForumResult Delete (Guid deleter)
+    public ForumResult Remove (Guid deleter)
     {
         if (Deleted)
             return DeletedResult();
@@ -231,12 +235,12 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
-    public ForumResult RemoveModerator (Guid actor, Guid moderatorId)
+    public ForumResult RemoveModerator (Guid actorUserId, Guid moderatorId)
     {
         if (Deleted)
             return DeletedResult();
 
-        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actor);
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
             Moderator mod = (Moderator) aux;
@@ -274,6 +278,168 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
+    public ForumResult AddBlackListed (Guid actorUserId, Guid blackListedUserId, bool? canComment, bool? canPost)
+    {
+        if (Deleted)
+            return DeletedResult();
+
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
+        if (aux != null)
+        {
+            BlackListed? alreadyExist = BlackListedCollection.GetByUserId(blackListedUserId);
+            if (alreadyExist != null)
+                return new ForumResult () { Value = false, Result = "User is already BlackListed." };
+
+            Moderator mod = (Moderator) aux;
+            bool successful = false;
+
+            if (canComment != null && canPost != null && mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
+            {
+                BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, (bool) canPost));
+                successful = true;
+            }                
+            else if (canComment != null && mod.CheckForAuthority(EAuthority.BlockFromComment))
+            {
+                BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, true));
+                successful = true;
+            }                
+            else if (canPost != null && mod.CheckForAuthority(EAuthority.BlockFromPost))
+            {
+                BlackListedCollection.Add(new BlackListed(blackListedUserId, true, (bool) canPost));
+                successful = true;
+            }                
+
+            return new ForumResult()
+            {
+                Value = successful,
+                Result = successful ? string.Empty : "Actor User does not have the Authority to proceed with the actions."
+            };
+        }
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
+    public ForumResult UpdateBlackListedCanComment (Guid actorUserId, Guid blackListedUserId, bool canComment)
+    {
+        if (Deleted)
+            return DeletedResult();
+
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
+        if (aux != null)
+        {
+            BlackListed? blackListedUserExist = BlackListedCollection.GetByUserId(blackListedUserId);
+            if (blackListedUserExist == null)
+                return new ForumResult () { Value = false, Result = "User to be updated is not BlackListed." };
+            
+            BlackListed blackListedUser = (BlackListed) blackListedUserExist;
+            Moderator mod = (Moderator) aux;
+
+            if (mod.CheckForAuthority(EAuthority.BlockFromComment))
+            {
+                BlackListedResult result = BlackListedCollection.Update(blackListedUserId, canComment, blackListedUser.CanPost);
+                return new ForumResult()
+                {
+                    Value = result.Value,
+                    Result = result.Result
+                };
+            }
+
+            return new ForumResult()
+            {
+                Value = false,
+                Result = "Actor User has no Authority to block other Users from comment."
+            };
+        }
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
+    public ForumResult UpdateBlackListedCanPost (Guid actorUserId, Guid blackListedUserId, bool canPost)
+    {
+         if (Deleted)
+            return DeletedResult();
+
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
+        if (aux != null)
+        {
+            BlackListed? blackListedUserExist = BlackListedCollection.GetByUserId(blackListedUserId);
+            if (blackListedUserExist == null)
+                return new ForumResult () { Value = false, Result = "User to be updated is not BlackListed." };
+            
+            BlackListed blackListedUser = (BlackListed) blackListedUserExist;
+            Moderator mod = (Moderator) aux;
+
+            if (mod.CheckForAuthority(EAuthority.BlockFromPost))
+            {
+                BlackListedResult result = BlackListedCollection.Update(blackListedUserId, canPost, blackListedUser.CanComment);
+                return new ForumResult()
+                {
+                    Value = result.Value,
+                    Result = result.Result
+                };
+            }
+
+            return new ForumResult()
+            {
+                Value = false,
+                Result = "Actor User has no Authority to block other Users from comment."
+            };
+        }
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
+    public ForumResult RemoveBlackListed(Guid actorUserId, Guid blackListedUserId)
+    {
+        if (Deleted)
+            return DeletedResult();
+        
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
+        if (aux != null)
+        {
+            BlackListed? blackListedUserExist = BlackListedCollection.GetByUserId(blackListedUserId);            
+            if (blackListedUserExist == null)
+                return new ForumResult () { Value = false, Result = "User to be removed is not Blacklisted." };
+
+            Moderator mod = (Moderator) aux;
+            BlackListed blackListedUser = (BlackListed) blackListedUserExist;
+
+            if (mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
+            {
+                BlackListedResult result = BlackListedCollection.Remove(blackListedUser);
+                return new ForumResult()
+                {
+                    Value = result.Value,
+                    Result = result.Result
+                };
+            }
+
+            return new ForumResult()
+            {
+                Value = false,
+                Result = "Actor User has no Authority to remove ther users from the BlackList."
+            };
+        }
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
     private ForumResult DeletedResult()
     {
         return new ForumResult()
@@ -283,7 +449,7 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
-    public static Forum Load (Guid forumId, Guid ownerId, string name, string description, bool deleted, ModeratorCollection moderatorCollection)    
+    public static Forum Load (Guid forumId, Guid ownerId, string name, string description, bool deleted, ModeratorCollection moderatorCollection, BlackListedCollection blackListedCollection)
     {
         return new Forum()
         {
@@ -292,6 +458,7 @@ public class Forum : IEntity, IAggregateRoot
             Name = name,
             Description = description,
             ModeratorCollection = moderatorCollection,
+            BlackListedCollection = blackListedCollection,
             Deleted = deleted
         };
     }

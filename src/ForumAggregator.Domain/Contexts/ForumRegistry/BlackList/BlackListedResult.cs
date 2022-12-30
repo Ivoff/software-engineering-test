@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.ForumBlackList;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using ForumAggregator.Domain.Shared.Interfaces;
 

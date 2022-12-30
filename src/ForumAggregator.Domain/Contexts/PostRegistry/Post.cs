@@ -34,7 +34,7 @@ public class Post : IEntity
 
     // Methods
 
-    public PostResult UpdatePost (Guid actor, string newTitle, string newContent)
+    public PostResult Update (Guid actor, string newTitle, string newContent)
     {
         if (Deleted)
             return DeletedResult();
@@ -59,17 +59,19 @@ public class Post : IEntity
         };
     }
 
-    public PostResult RemovePost (Guid actor)
+    public PostResult Remove (Guid actor)
     {
         if (Deleted)
             return DeletedResult();
 
         if (actor == Author.Id)
         {
+            PostResult result = Delete();
+
             return new PostResult()
             {
-                Value = true,
-                Result = string.Empty,
+                Value = result.Value,
+                Result = result.Result,
                 Post = null
             };
         }

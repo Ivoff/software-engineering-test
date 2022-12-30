@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.ForumBlackList;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
 using System.Collections.Generic;
@@ -39,15 +39,21 @@ public class BlackListedCollection
         };
     }
 
-    public void Update (Guid userId, bool canComment, bool canPost)
+    public BlackListedResult Update (Guid userId, bool canComment, bool canPost)
     {
         BlackListed blackListed = BlackList.First(x => x.UserId == userId && x.Deleted == false);
-        BlackList.Remove(blackListed);
+        bool removed = BlackList.Remove(blackListed);
 
-        blackListed.UpdateCanComment(canComment);
-        blackListed.UpdateCanPost(canPost);
+        BlackListedResult updateCommentResult = blackListed.UpdateCanComment(canComment);
+        BlackListedResult updatePostResult = blackListed.UpdateCanPost(canPost);
 
         BlackList.Add(blackListed);
+
+        return new BlackListedResult()
+        {
+            Value = removed && updateCommentResult.Value && updatePostResult.Value,
+            Result = string.IsNullOrWhiteSpace(updateCommentResult.Result) ? updatePostResult.Result : updateCommentResult.Result
+        };
     }
 
     public static BlackListedCollection Load (ICollection<BlackListed> blacklist)
