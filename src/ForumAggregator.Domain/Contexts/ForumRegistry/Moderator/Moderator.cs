@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Shared.Entities.Moderator;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using ForumAggregator.Domain.Shared.Interfaces;
 
@@ -16,6 +16,8 @@ public class Moderator : IEntity
 
     private ICollection<EAuthority> Authorities { get; init; } = default!;
 
+    public bool Deleted { get; private set; } = default!;
+
     // Constructors
 
     private Moderator () {}
@@ -25,6 +27,7 @@ public class Moderator : IEntity
         Id = Guid.NewGuid();
         UserId = userId;
         Authorities = authorities;
+        Deleted = false;
     }
 
     // Methods
@@ -58,13 +61,19 @@ public class Moderator : IEntity
         Authorities.Clear();
     }
 
-    public static Moderator Load(Guid moderatorId, Guid userId, ICollection<EAuthority> authorities)
+    public void Delete()
+    {
+        Deleted = true;
+    }
+
+    public static Moderator Load(Guid moderatorId, Guid userId, bool deleted, ICollection<EAuthority> authorities)
     {
         return new Moderator()
         {
             Id = moderatorId,
             UserId = userId,
-            Authorities = authorities
+            Authorities = authorities,
+            Deleted = deleted
         };
     }
 }

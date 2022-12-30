@@ -1,6 +1,4 @@
-namespace ForumAggregator.Domain.Shared.Entities.Moderator;
-
-using ForumAggregator.Domain.Shared.Interfaces;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
 using System.Collections.Generic;
@@ -23,17 +21,17 @@ public class ModeratorCollection
 
     public Moderator? GetModeratorByUserId (Guid userId)
     {
-        return Moderators.FirstOrDefault(x => x.UserId == userId);
+        return Moderators.FirstOrDefault(x => x.UserId == userId && x.Deleted == false);
     }
 
     public Moderator? GetModerator (Guid moderatorId)
     {
-        return Moderators.FirstOrDefault(x => x.Id == moderatorId);
+        return Moderators.FirstOrDefault(x => x.Id == moderatorId && x.Deleted == false);
     }
 
-    public ICollection<Moderator?> GetModeratorsWith (EAuthority authority)
+    public ICollection<Moderator> GetModeratorsWith (EAuthority authority)
     {
-        return Moderators.Where(x => x.CheckForAuthority(authority)).ToList<Moderator?>();
+        return Moderators.Where(x => x.CheckForAuthority(authority)).ToList<Moderator>();
     }
 
     public void AddModerator (Moderator newModerator)
@@ -43,12 +41,13 @@ public class ModeratorCollection
 
     public bool RemoveModerator (Moderator deletedModerator)
     {
+        deletedModerator.Delete();
         return Moderators.Remove(deletedModerator);
     }
 
     public void UpdateModerator (Guid moderatorId, ICollection<EAuthority> authorities)
     {
-        Moderator currModerator = Moderators.First(x => x.Id == moderatorId);
+        Moderator currModerator = Moderators.First(x => x.Id == moderatorId && x.Deleted == false);
         Moderators.Remove(currModerator);
 
         currModerator.ClearAuthorities();

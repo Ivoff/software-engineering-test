@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Shared.Entities.Moderator;
+namespace ForumAggregator.Domain.ForumRegistry;
 
 public enum EAuthority
 {

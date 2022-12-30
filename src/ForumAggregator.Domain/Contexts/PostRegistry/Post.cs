@@ -82,6 +82,20 @@ public class Post : IEntity
         };
     }
 
+    public PostResult Delete()
+    {
+        if (Deleted)
+            return DeletedResult();
+
+        Deleted = true;
+        return new PostResult()
+        {
+            Value = true,
+            Result = string.Empty,
+            Post = null
+        };
+    }
+
     private PostResult DeletedResult ()
     {
         return new PostResult()

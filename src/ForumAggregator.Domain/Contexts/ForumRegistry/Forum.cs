@@ -3,7 +3,6 @@ namespace ForumAggregator.Domain.ForumRegistry;
 using System;
 using System.Collections.Generic;
 using ForumAggregator.Domain.Shared.Interfaces;
-using ForumAggregator.Domain.Shared.Entities.Moderator;
 
 public class Forum : IEntity, IAggregateRoot
 {
@@ -122,7 +121,7 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
-    public ForumResult CanDeleteForum (Guid deleter)
+    public ForumResult Delete (Guid deleter)
     {
         if (Deleted)
             return DeletedResult();
@@ -130,6 +129,15 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(deleter);
         if (aux != null)
         {
+            if (ModeratorCollection.GetModeratorsWith(EAuthority.DeleteForum).Count > 0)
+            {
+                return new ForumResult()
+                {
+                    Value = false,
+                    Result = "Actor User is not the only one that can delete the Forum, therefore it will not be done."
+                };
+            }
+
             Moderator mod = (Moderator) aux;
             bool value = mod.CheckForAuthority(EAuthority.DeleteForum);
             return new ForumResult()

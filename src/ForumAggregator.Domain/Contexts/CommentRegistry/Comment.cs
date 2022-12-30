@@ -35,7 +35,7 @@ public class Comment: IEntity
 
     // Methods
 
-    public CommentServiceResult UpdateComment(Guid actor, string content)
+    public CommentResult UpdateComment(Guid actor, string content)
     {
         if (Deleted)
             return DeletedResult();
@@ -43,7 +43,7 @@ public class Comment: IEntity
         if (actor == Author.Id)
         {
             Content = content;
-            return new CommentServiceResult()
+            return new CommentResult()
             {
                 Value = true,
                 Result = "Comment successfully updated.",
@@ -51,7 +51,7 @@ public class Comment: IEntity
             };
         }
 
-        return new CommentServiceResult()
+        return new CommentResult()
         {
             Value = false,
             Result = "User is not the author of the Comment.",
@@ -59,14 +59,14 @@ public class Comment: IEntity
         };
     }
 
-    public CommentServiceResult RemoveComment(Guid actor)
+    public CommentResult RemoveComment(Guid actor)
     {
         if (Deleted)
             return DeletedResult();
 
         if (actor == Author.Id)
         {
-            return new CommentServiceResult()
+            return new CommentResult()
             {
                 Value = true,
                 Result = string.Empty,
@@ -74,7 +74,7 @@ public class Comment: IEntity
             };
         }
 
-        return new CommentServiceResult()
+        return new CommentResult()
         {
             Value = false,
             Result = "User is not the author of the comment.",
@@ -82,9 +82,9 @@ public class Comment: IEntity
         };
     }
 
-    private CommentServiceResult DeletedResult ()
+    private CommentResult DeletedResult ()
     {
-        return new CommentServiceResult()
+        return new CommentResult()
         {
             Value = false,
             Result = "Comment has been removed.",
@@ -92,11 +92,11 @@ public class Comment: IEntity
         };
     }
 
-    public static CommentServiceResult Create(Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
+    public static CommentResult Create(Guid postId, Guid? parentCommentId, string content, CommentAuthor author)
     {
         Comment newComment = new Comment(postId, parentCommentId, content, author);
         bool resultValue = !author.CannotComment;
-        return new CommentServiceResult()
+        return new CommentResult()
         {
             Value = resultValue,
             Result = resultValue ? "Comment successfully created" : "Comment has been blocked from being created",
