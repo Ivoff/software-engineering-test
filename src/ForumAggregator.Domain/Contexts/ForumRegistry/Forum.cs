@@ -298,11 +298,17 @@ public class Forum : IEntity, IAggregateRoot
 
     public Moderator? GetModerator (Guid moderatorId)
     {
+        if (Deleted)
+            return null;
+        
         return ModeratorCollection.GetModerator(moderatorId);
     }
 
     public Moderator? GetModeratorByUserId (Guid userId)
     {
+        if (Deleted)
+            return null;
+
         return ModeratorCollection.GetModeratorByUserId(userId);
     }
 
@@ -326,12 +332,12 @@ public class Forum : IEntity, IAggregateRoot
                 BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, (bool) canPost));
                 successful = true;
             }                
-            else if (canComment != null && mod.CheckForAuthority(EAuthority.BlockFromComment))
+            else if (canComment != null && canPost == null && mod.CheckForAuthority(EAuthority.BlockFromComment))
             {
                 BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, true));
                 successful = true;
             }                
-            else if (canPost != null && mod.CheckForAuthority(EAuthority.BlockFromPost))
+            else if (canPost != null && canComment == null && mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
                 BlackListedCollection.Add(new BlackListed(blackListedUserId, true, (bool) canPost));
                 successful = true;
@@ -457,7 +463,7 @@ public class Forum : IEntity, IAggregateRoot
             return new ForumResult()
             {
                 Value = false,
-                Result = "Actor User has no Authority to remove ther users from the BlackList."
+                Result = "Actor User has no Authority to remove ther Users from the BlackList."
             };
         }
 
@@ -466,6 +472,14 @@ public class Forum : IEntity, IAggregateRoot
             Value = false,
             Result = "Actor User is not a Moderator."
         };
+    }
+
+    public BlackListed? GetBlackListedByUserId(Guid userId)
+    {
+        if (Deleted)
+            return null;
+        
+        return BlackListedCollection.GetByUserId(userId);
     }
 
     private ForumResult DeletedResult()
