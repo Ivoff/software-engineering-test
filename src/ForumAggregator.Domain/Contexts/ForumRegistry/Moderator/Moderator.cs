@@ -38,6 +38,11 @@ public class Moderator : IEntity
         return aux == authority;
     }
 
+    public ICollection<EAuthority> GetAuthorities()
+    {
+        return new List<EAuthority>(Authorities);
+    }
+
     public void AddAuthority(EAuthority authority)
     {
         Authorities.Add(authority);

@@ -1,6 +1,7 @@
 namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ForumAggregator.Domain.Shared.Interfaces;
 
@@ -43,16 +44,7 @@ public class Forum : IEntity, IAggregateRoot
 
     private void AssingOwnerAsModerator ()
     {
-        EAuthority[] authorities = {
-            EAuthority.BlockFromComment,
-            EAuthority.BlockFromPost,
-            EAuthority.AlterForumDescription,
-            EAuthority.DeleteForum,
-            EAuthority.DeleteModerator,
-            EAuthority.DeleteComment,
-            EAuthority.DeletePost,
-            EAuthority.AddModerator
-        };
+        EAuthority[] authorities = Enum.GetValues<EAuthority>();
         
         Moderator newModerator = new Moderator(OwnerId, authorities);
 
@@ -133,7 +125,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(deleter);
         if (aux != null)
         {
-            if (ModeratorCollection.GetModeratorsWith(EAuthority.DeleteForum).Count > 0)
+            if (ModeratorCollection.GetModeratorsWith(EAuthority.DeleteForum).Count != 1)
             {
                 return new ForumResult()
                 {
@@ -144,6 +136,8 @@ public class Forum : IEntity, IAggregateRoot
 
             Moderator mod = (Moderator) aux;
             bool value = mod.CheckForAuthority(EAuthority.DeleteForum);
+            Deleted = value;
+
             return new ForumResult()
             {
                 Value = value,
@@ -172,7 +166,19 @@ public class Forum : IEntity, IAggregateRoot
                 return new ForumResult()
                 {
                     Value = false,
-                    Result = "Actor user has no Authority to add a Moderator."
+                    Result = "Actor User has no Authority to add a Moderator."
+                };
+            }
+
+            bool hasNecessaryAuthorities = true;
+            foreach(EAuthority authority in authorities)
+                hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
+            
+            if (hasNecessaryAuthorities == false)
+            {
+                return new ForumResult(){
+                    Value = false,
+                    Result = "Actor user has to possess all Authorities that are being given."
                 };
             }
 
@@ -181,7 +187,7 @@ public class Forum : IEntity, IAggregateRoot
             return new ForumResult()
             {
                 Value = true,
-                Result = "Moderator successfully added."
+                Result = string.Empty
             };
         }
         
@@ -207,6 +213,18 @@ public class Forum : IEntity, IAggregateRoot
                 {
                     Value = false,
                     Result = "Moderator has no Authority to alter others Authorities."
+                };
+            }
+
+            bool hasNecessaryAuthorities = true;
+            foreach(EAuthority authority in newAuthorities)
+                hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
+            
+            if (hasNecessaryAuthorities == false)
+            {
+                return new ForumResult(){
+                    Value = false,
+                    Result = "Actor User has to possess all Authorities that are being given."
                 };
             }
 
@@ -278,6 +296,16 @@ public class Forum : IEntity, IAggregateRoot
         };
     }
 
+    public Moderator? GetModerator (Guid moderatorId)
+    {
+        return ModeratorCollection.GetModerator(moderatorId);
+    }
+
+    public Moderator? GetModeratorByUserId (Guid userId)
+    {
+        return ModeratorCollection.GetModeratorByUserId(userId);
+    }
+
     public ForumResult AddBlackListed (Guid actorUserId, Guid blackListedUserId, bool? canComment, bool? canPost)
     {
         if (Deleted)
@@ -340,7 +368,7 @@ public class Forum : IEntity, IAggregateRoot
 
             if (mod.CheckForAuthority(EAuthority.BlockFromComment))
             {
-                BlackListedResult result = BlackListedCollection.Update(blackListedUserId, canComment, blackListedUser.CanPost);
+                IDomainResult<bool> result = BlackListedCollection.Update(blackListedUserId, canComment, blackListedUser.CanPost);
                 return new ForumResult()
                 {
                     Value = result.Value,
@@ -379,7 +407,7 @@ public class Forum : IEntity, IAggregateRoot
 
             if (mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
-                BlackListedResult result = BlackListedCollection.Update(blackListedUserId, canPost, blackListedUser.CanComment);
+                IDomainResult<bool> result = BlackListedCollection.Update(blackListedUserId, canPost, blackListedUser.CanComment);
                 return new ForumResult()
                 {
                     Value = result.Value,
@@ -418,7 +446,7 @@ public class Forum : IEntity, IAggregateRoot
 
             if (mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
-                BlackListedResult result = BlackListedCollection.Remove(blackListedUser);
+                IDomainResult<bool> result = BlackListedCollection.Remove(blackListedUser);
                 return new ForumResult()
                 {
                     Value = result.Value,

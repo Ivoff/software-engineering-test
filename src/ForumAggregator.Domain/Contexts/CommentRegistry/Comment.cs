@@ -82,6 +82,19 @@ public class Comment: IEntity
         };
     }
 
+    public CommentResult Delete()
+    {
+        if (Deleted)
+            return DeletedResult();
+
+        Deleted = true;
+        return new CommentResult()
+        {
+            Value = true,
+            Result = string.Empty
+        };
+    }
+
     private CommentResult DeletedResult ()
     {
         return new CommentResult()
