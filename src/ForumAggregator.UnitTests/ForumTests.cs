@@ -1,4 +1,4 @@
-namespace ForumAggregator.UnitTests;
+namespace ForumAggregator.UnitTests.ForumTests;
 
 using System;
 using System.Linq;
@@ -89,6 +89,54 @@ public class ForumTests
 
         Assert.True(result.Value, result.Result);
         Assert.True(forum.Deleted);
+    }
+
+    [Fact]
+    public void OwnerShouldDeleteForum2()
+    {
+        Guid userId = Guid.NewGuid();
+        ModeratorCollection moderatorCollection = ModeratorCollection.Load(
+            new List<Moderator> { 
+                new Moderator(userId, Enum.GetValues<EAuthority>()),
+                Moderator.Load(
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    false,
+                    new List<EAuthority>{EAuthority.BlockFromComment, EAuthority.BlockFromPost}
+                ),
+                Moderator.Load(
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    false,
+                    new List<EAuthority>{EAuthority.AlterForumDescription, EAuthority.AlterForumDescription}
+                )
+            }
+        );
+        BlackListedCollection blackListedCollection = BlackListedCollection.Load(
+            new List<BlackListed>{
+                BlackListed.Load(Guid.NewGuid(), Guid.NewGuid(), false, false, false),
+                BlackListed.Load(Guid.NewGuid(), Guid.NewGuid(), false, false, false),
+                BlackListed.Load(Guid.NewGuid(), Guid.NewGuid(), false, false, false),
+                BlackListed.Load(Guid.NewGuid(), Guid.NewGuid(), false, false, false),
+                BlackListed.Load(Guid.NewGuid(), Guid.NewGuid(), false, false, false)
+            }
+        );
+        Forum forum = Forum.Load(
+            Guid.NewGuid(),
+            userId,
+            "Test Forum",
+            "This is the Test Forum, welcome.",
+            false,
+            moderatorCollection,
+            blackListedCollection
+        );
+
+        IDomainResult<bool> result = forum.Remove(userId);
+
+        Assert.True(result.Value, result.Result);
+        Assert.True(forum.Deleted);
+        Assert.All<Moderator>(moderatorCollection.Moderators, x => Assert.True(x.Deleted));
+        Assert.All<BlackListed>(blackListedCollection.BlackList, x => Assert.True(x.Deleted));
     }
 
     [Fact]

@@ -2,12 +2,14 @@ namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 public class BlackListedCollection
 {
     // Fields & Properties
 
+    // IMPORTANT: This is public so it can be checked in tests, is should never be accessed directly
     public ICollection<BlackListed> BlackList { get; init; }
 
     // Constructors
@@ -29,14 +31,14 @@ public class BlackListedCollection
         BlackList.Add(newBlackListed);
     }
 
+    public IReadOnlyCollection<BlackListed> GetAllBlackListed()
+    {
+        return new ReadOnlyCollection<BlackListed>(BlackList.Where(x => x.Deleted == false).ToList());
+    }
+
     public BlackListedResult Remove (BlackListed deletedBlackListed)
     {
-        BlackListedResult deletionResult = deletedBlackListed.Delete();
-        return new BlackListedResult()
-        {
-            Value = BlackList.Remove(deletedBlackListed) && deletionResult.Value,
-            Result = deletionResult.Result
-        };
+        return deletedBlackListed.Delete();
     }
 
     public BlackListedResult Update (Guid userId, bool canComment, bool canPost)

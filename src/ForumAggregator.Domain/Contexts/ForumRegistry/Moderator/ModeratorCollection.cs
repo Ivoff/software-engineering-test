@@ -2,12 +2,14 @@ namespace ForumAggregator.Domain.ForumRegistry;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 public class ModeratorCollection
 {
     // Fields & Properties
 
+    // IMPORTANT: This is public so it can be checked in tests, is should never be accessed directly
     public ICollection<Moderator> Moderators { get; init; }
 
     // Constructors
@@ -34,26 +36,28 @@ public class ModeratorCollection
         return Moderators.Where(x => x.CheckForAuthority(authority)).ToList<Moderator>();
     }
 
+    public IReadOnlyCollection<Moderator> GetAllModerators()
+    {
+        return new ReadOnlyCollection<Moderator>(Moderators.Where(x => x.Deleted == false).ToList());
+    }
+
     public void AddModerator (Moderator newModerator)
     {
         Moderators.Add(newModerator);
     }
 
-    public bool RemoveModerator (Moderator deletedModerator)
+    public ModeratorResult RemoveModerator (Moderator deletedModerator)
     {
-        deletedModerator.Delete();
-        return Moderators.Remove(deletedModerator);
+        return deletedModerator.Delete();
     }
 
-    public void UpdateModerator (Guid moderatorId, ICollection<EAuthority> authorities)
+    public ModeratorResult UpdateModerator (Guid moderatorId, ICollection<EAuthority> authorities)
     {
         Moderator currModerator = Moderators.First(x => x.Id == moderatorId && x.Deleted == false);
-        Moderators.Remove(currModerator);
-
-        currModerator.ClearAuthorities();
+        var result = currModerator.ClearAuthorities();
         currModerator.AddAuthorities(authorities);
 
-        Moderators.Add(currModerator);
+        return result;
     }
 
     public static ModeratorCollection Load (ICollection<Moderator> moderators)

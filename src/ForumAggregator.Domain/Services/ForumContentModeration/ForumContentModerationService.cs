@@ -8,8 +8,18 @@ using ForumAggregator.Domain.Shared.Interfaces;
 
 public class ForumContentModerationService: IForumContentModerationService
 {
-    public ForumContentModerationResult RemovePost(Post post, Forum forum, Guid actorUserId)
+    public ForumContentModerationResult RemovePost(in Post post, in Forum forum, Guid actorUserId)
     {
+        // Deletion Check.
+        
+        if (post.Deleted)
+            return DeletedResult(post);
+
+        if (forum.Deleted)
+            return DeletedResult(forum);
+
+        // End of Deletion Check.
+
         if (post.ForumId == forum.Id)
         {
             Moderator? aux = forum.GetModeratorByUserId(actorUserId);
@@ -29,12 +39,25 @@ public class ForumContentModerationService: IForumContentModerationService
         return new ForumContentModerationResult() { Value = false, Result = "Post does not belong to Forum." };
     }
 
-    public ForumContentModerationResult RemoveComment(Comment comment, Post post, Forum forum, Guid actorUserId)
+    public ForumContentModerationResult RemoveComment(in Comment comment, in Post post, in Forum forum, Guid actorUserId)
     {
+        // Deletion Check.
+
+        if (post.Deleted)
+            return DeletedResult(post);
+
+        if (forum.Deleted)
+            return DeletedResult(forum);
+
+        if (comment.Deleted)
+            return DeletedResult(comment);
+
+        // End of Deletion Check.
+
         if (comment.PostId != post.Id)
             return new ForumContentModerationResult() { Value = false, Result = "Comment does not belong to Post." };
         
-        if (post.Id != forum.Id)
+        if (post.ForumId != forum.Id)
             return new ForumContentModerationResult() { Value = false, Result = "Post from the Comment does not belong to Forum." };
 
         Moderator? aux = forum.GetModeratorByUserId(actorUserId);
@@ -55,5 +78,14 @@ public class ForumContentModerationService: IForumContentModerationService
         }
 
         return new ForumContentModerationResult() { Value = false, Result = "Actor User has no Authority to remove the Comment." };
+    }
+
+    private ForumContentModerationResult DeletedResult(Object obj)
+    {        
+        return new ForumContentModerationResult()
+        {
+            Value = false,
+            Result = $"{obj.GetType().Name} has already been deleted"
+        };
     }
 }

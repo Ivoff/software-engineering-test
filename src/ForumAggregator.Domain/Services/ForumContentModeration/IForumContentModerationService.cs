@@ -8,7 +8,7 @@ using ForumAggregator.Domain.PostRegistry;
 
 public interface IForumContentModerationService: IDomainService
 {
-    ForumContentModerationResult RemoveComment (Comment comment, Post post, Forum forum, Guid actorUserId);
+    ForumContentModerationResult RemoveComment (in Comment comment, in Post post, in Forum forum, Guid actorUserId);
 
-    ForumContentModerationResult RemovePost (Post post, Forum forum, Guid actorUserId);
+    ForumContentModerationResult RemovePost (in Post post, in Forum forum, Guid actorUserId);
 }

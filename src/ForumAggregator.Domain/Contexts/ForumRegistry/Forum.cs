@@ -134,15 +134,39 @@ public class Forum : IEntity, IAggregateRoot
                 };
             }
 
-            Moderator mod = (Moderator) aux;
+            Moderator mod = (Moderator) aux;            
             bool value = mod.CheckForAuthority(EAuthority.DeleteForum);
-            Deleted = value;
+            
+            if (value == false)
+                return new ForumResult() { Value = value, Result = "Actor User has no authority to delete the Forum." };
 
-            return new ForumResult()
+            bool moderatorDeleted = true;
+            string moderatorResult = string.Empty;
+            bool blackListedDeleted = true;
+            string blackListedResult = string.Empty;
+                
+            foreach(var moderator in ModeratorCollection.GetAllModerators())
             {
-                Value = value,
-                Result = value ? string.Empty : "Actor User has no authority to delete the Forum."
-            };
+                var result = ModeratorCollection.RemoveModerator(moderator);
+                moderatorDeleted = moderatorDeleted && result.Value;
+                moderatorResult = !string.IsNullOrWhiteSpace(result.Result) ? result.Result : moderatorResult;
+            }
+
+            foreach(var blacklisted in BlackListedCollection.GetAllBlackListed())
+            {
+                var result = BlackListedCollection.Remove(blacklisted);
+                blackListedDeleted = moderatorDeleted && result.Value;
+                blackListedResult = !string.IsNullOrWhiteSpace(result.Result) ? result.Result : blackListedResult;
+            }
+
+            if (moderatorDeleted == false)
+                return new ForumResult() {Value = false, Result = "Error while deleting Mdoerators." };
+
+            if (blackListedDeleted == false)
+                return new ForumResult() {Value = false, Result = "Error while deleting BlackList." };
+
+            Deleted = true;
+            return new ForumResult() { Value = true, Result = string.Empty };
         }
 
         return new ForumResult()
@@ -231,11 +255,11 @@ public class Forum : IEntity, IAggregateRoot
             Moderator? updated = ModeratorCollection.GetModerator(moderatorId);            
             if (updated != null)
             {
-                ModeratorCollection.UpdateModerator(moderatorId, newAuthorities);
+                var result = ModeratorCollection.UpdateModerator(moderatorId, newAuthorities);
                 return new ForumResult()
                 {
-                    Value = true,
-                    Result = "Moderator successfully updated."
+                    Value = result.Value,
+                    Result = result.Result
                 };
             }            
             
@@ -274,11 +298,11 @@ public class Forum : IEntity, IAggregateRoot
             Moderator? deleted = ModeratorCollection.GetModerator(moderatorId);
             if (deleted != null)
             {
-                ModeratorCollection.RemoveModerator((Moderator)deleted);
+                var result = ModeratorCollection.RemoveModerator((Moderator)deleted);
                 return new ForumResult()
                 {
-                    Value = true,
-                    Result = "Moderator has been successfully removed."
+                    Value = result.Value,
+                    Result = result.Result
                 };
             } 
 

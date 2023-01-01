@@ -61,14 +61,39 @@ public class Moderator : IEntity
         return Authorities.Remove(authority);
     }
 
-    public void ClearAuthorities()
+    public ModeratorResult ClearAuthorities()
     {
+        if (Deleted)
+            return DeletedResult();
+
         Authorities.Clear();
+        return new ModeratorResult()
+        {
+            Value = true,
+            Result = string.Empty
+        };
     }
 
-    public void Delete()
+    public ModeratorResult Delete()
     {
+        if (Deleted)
+            return DeletedResult();
+
         Deleted = true;
+        return new ModeratorResult()
+        {
+            Value = true,
+            Result = string.Empty
+        };
+    }
+
+    private ModeratorResult DeletedResult()
+    {
+        return new ModeratorResult()
+        {
+            Value = false,
+            Result = "Moderator has already been deleted."
+        };
     }
 
     public static Moderator Load(Guid moderatorId, Guid userId, bool deleted, ICollection<EAuthority> authorities)
