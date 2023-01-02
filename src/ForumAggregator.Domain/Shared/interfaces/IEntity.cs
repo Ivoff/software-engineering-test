@@ -2,7 +2,7 @@ namespace ForumAggregator.Domain.Shared.Interfaces;
 
 using System;
 
-interface IEntity
+public interface IEntity
 {
     Guid Id 
     {
