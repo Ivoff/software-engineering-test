@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ForumAggretaor.Application\ForumAggretaor.Application.csproj" />
+    <ProjectReference Include="..\ForumAggregator.Application\ForumAggregator.Application.csproj" />
     <ProjectReference Include="..\ForumAggregator.Infraestructure\ForumAggregator.Infraestructure.csproj" />
   </ItemGroup>
 
