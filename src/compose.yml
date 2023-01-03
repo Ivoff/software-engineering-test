@@ -1,0 +1,24 @@
+services:
+  backend:
+      build:
+        context: .
+        dockerfile: dockerfile
+      hostname: backend
+      ports:
+        - "8000:80"
+      networks:
+        - app-net
+      depends_on:
+        - database
+
+  database:
+    image: postgres:latest
+    hostname: database
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    networks:
+      - app-net
+
+networks:
+  app-net: {}
