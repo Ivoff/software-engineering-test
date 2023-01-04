@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Authentication;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly IHttpContextAccessor _http_context;
+    private readonly IHttpContextAccessor _httpContext;
 
     public AuthenticationService(IHttpContextAccessor http_context)
     {
-        _http_context = http_context;
+        _httpContext = http_context;
     }
     
     public async Task GenerateCookie(Guid userId, string userName)
@@ -25,11 +25,11 @@ public class AuthenticationService : IAuthenticationService
 
         ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-        await _http_context.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        await _httpContext.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
     }
 
     public async Task SignOut()
     {
-        await _http_context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await _httpContext.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

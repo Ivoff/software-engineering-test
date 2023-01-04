@@ -78,7 +78,31 @@ public class User: IEntity
 
     public UserResult EditPassword (Guid editor, string newPassword)
     {
-        throw new NotImplementedException();
+        if (Deleted)
+            return DeletedResult();
+        
+        if (editor != Id)
+            return new UserResult() { Value = false, Result = "Unauthorized access to other User's account." };
+
+        if (newPassword == Password)
+            return new UserResult() { Value = false, Result = "The new Password can not be equal to the old one." };
+        
+        Password = newPassword;
+
+        return new UserResult() { Value = true, Result = string.Empty };
+    }
+
+    public UserResult Delete(Guid actorUserId)
+    {
+        if (Deleted)
+            return DeletedResult();
+        
+        if (actorUserId != Id)
+            return new UserResult() { Value = false, Result = "Unauthorized access to other User's account." };
+        
+        Deleted = true;
+
+        return new UserResult() { Value = true, Result = string.Empty };
     }
 
     private UserResult DeletedResult ()

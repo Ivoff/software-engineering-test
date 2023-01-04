@@ -5,4 +5,6 @@ public interface IUserService
     public bool UserEmailExist(string email);
     public UserAppServiceModel? GetUser(Guid id);
     public UserAppServiceModel? GetUser(string email);
+    public ServiceResult UpdateUser(UserAppServiceModel user);
+    public ServiceResult DeleteUser(Guid id);
 }

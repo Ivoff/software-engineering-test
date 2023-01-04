@@ -43,11 +43,11 @@ public class BlackListedCollection
 
     public BlackListedResult Update (Guid userId, bool canComment, bool canPost)
     {
-        BlackListed blackListed = BlackList.First(x => x.UserId == userId && x.Deleted == false);
+        var blackListed = BlackList.First(x => x.UserId == userId && x.Deleted == false);
         bool removed = BlackList.Remove(blackListed);
 
-        BlackListedResult updateCommentResult = blackListed.UpdateCanComment(canComment);
-        BlackListedResult updatePostResult = blackListed.UpdateCanPost(canPost);
+        var updateCommentResult = blackListed.UpdateCanComment(canComment);
+        var updatePostResult = blackListed.UpdateCanPost(canPost);
 
         BlackList.Add(blackListed);
 

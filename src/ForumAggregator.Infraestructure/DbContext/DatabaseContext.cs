@@ -1,5 +1,6 @@
 namespace ForumAggregator.Infraestructure.DbContext;
 
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,5 @@ public class DatabaseContext: DbContext
         modelBuilder.Entity<BlackListed>().Property(b => b.CreatedAt).HasDefaultValueSql("Now()");
         
         modelBuilder.Entity<Moderator>().Property(b => b.CreatedAt).HasDefaultValueSql("Now()");
-    }   
-
+    }
 }

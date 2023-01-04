@@ -4,9 +4,5 @@ using System;
 
 public interface IEntity
 {
-    Guid Id 
-    {
-        get;
-        init;
-    }
+    Guid Id { get; init; }
 }

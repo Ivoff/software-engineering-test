@@ -13,27 +13,24 @@ using ForumAggregator.Application.Services;
 [Route("auth")]
 public class AuthenticationController: ControllerBase
 {
-    private readonly IUserRegistrationUseCase _registrationUseCase;    
+    private readonly IUserAuthenticationUseCase _userAuthenticationUseCase;    
     private readonly Application.Services.IAuthenticationService _authenticationService;
-    private readonly IUserLoginUseCase _loginUseCase;
     private readonly IUserService _user_service;
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IValidator<RegisterRequest> _registerRequestValidator;
     private readonly IValidator<LoginRequest> _loginRequestValidator;
 
     public AuthenticationController(
-        IUserRegistrationUseCase registrationUseCase, 
+        IUserAuthenticationUseCase userAuthenticationUseCase, 
         Application.Services.IAuthenticationService authenticationService, 
-        IUserLoginUseCase loginUseCase,
         IUserService user_service,
         IValidator<RegisterRequest> registerRequestValidator,
         IValidator<LoginRequest> loginRequestValidator,
         ILogger<AuthenticationController> logger
     )
     {
-        _registrationUseCase = registrationUseCase;
+        _userAuthenticationUseCase = userAuthenticationUseCase;
         _authenticationService = authenticationService;
-        _loginUseCase = loginUseCase;
         _user_service = user_service;
         _loginRequestValidator = loginRequestValidator;
         _registerRequestValidator = registerRequestValidator;
@@ -52,7 +49,7 @@ public class AuthenticationController: ControllerBase
             return BadRequest(validationResult.ToString());
         }
 
-        UserUseCaseResult result = _registrationUseCase.Register(
+        UserUseCaseResult result = _userAuthenticationUseCase.Register(
             registerRequest.Name,
             registerRequest.Email,
             registerRequest.Password
@@ -89,7 +86,7 @@ public class AuthenticationController: ControllerBase
             return Ok(new AuthenticationResponse(user.Id, user.Name));
         }
 
-        UserUseCaseResult result = _loginUseCase.Login(
+        UserUseCaseResult result = _userAuthenticationUseCase.Login(
             loginRequest.Email,
             loginRequest.Password
         );

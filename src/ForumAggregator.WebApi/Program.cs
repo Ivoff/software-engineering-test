@@ -1,9 +1,9 @@
-
-
 using ForumAggregator.Application.DependencyInjection;
 using ForumAggregator.Infraestructure.DependencyInjection;
 using ForumAggregator.Infraestructure.DbContext;
 using ForumAggregator.WebApi.Controllers.Authentication;
+using ForumAggregator.WebApi.Controllers.User;
+using ForumAggregator.Domain.DependencyInjection;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,10 +19,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddInfraestructure();
 builder.Services.AddApplication();
 builder.Services.AddControllers();
+// Need to reference domain so that Domain Services can be registered
+// Just like the need to reference Infraestructure so that 
+// Infraestructure Services can be registered
+builder.Services.AddDomain();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValidator>();
 
 var app = builder.Build();
 

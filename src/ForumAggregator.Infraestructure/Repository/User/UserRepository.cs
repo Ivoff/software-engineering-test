@@ -33,6 +33,14 @@ public class UserRepository: IUserRepository
         return _mapper.Map<Domain.UserRegistry.User>(infraUser);
     }
 
+    public Domain.UserRegistry.User? GetByName(string name)
+    {
+        Infraestructure.Models.User? infraUser = _dbContext.Users.Where(user => user.Name == name).FirstOrDefault();
+        if (infraUser == null)
+            return null;
+        return _mapper.Map<Domain.UserRegistry.User>(infraUser);
+    }
+
     public bool Save(Domain.UserRegistry.User entity)
     {
         Infraestructure.Models.User newUser = _mapper.Map<Infraestructure.Models.User>(entity);
@@ -43,7 +51,18 @@ public class UserRepository: IUserRepository
         }
         else
         {
-            _dbContext.Update(newUser);
+            Infraestructure.Models.User currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
+            
+            currUser.Name = newUser.Name;
+            currUser.Email = newUser.Email;
+            currUser.Deleted = newUser.Deleted;
+            
+            if (currUser.Password != newUser.Password)
+            {
+                throw new InvalidOperationException("Do not use this function to update Passwords");
+            }
+            
+            _dbContext.Update(currUser);
         }
 
         return _dbContext.SaveChanges() > 0;
@@ -60,7 +79,15 @@ public class UserRepository: IUserRepository
         }
         else 
         {
-            _dbContext.Update(newUser);
+            Infraestructure.Models.User currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
+            
+            currUser.Name = newUser.Name;
+            currUser.Email = newUser.Email;
+            currUser.Password = newUser.Password;
+            currUser.Salt = newUser.Salt;
+            currUser.Deleted = newUser.Deleted;            
+
+            _dbContext.Update(currUser);
         }
 
         return _dbContext.SaveChanges() > 0;

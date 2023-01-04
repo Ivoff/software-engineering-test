@@ -46,7 +46,7 @@ public class Forum : IEntity, IAggregateRoot
     {
         EAuthority[] authorities = Enum.GetValues<EAuthority>();
         
-        Moderator newModerator = new Moderator(OwnerId, authorities);
+        var newModerator = new Moderator(OwnerId, authorities);
 
         ModeratorCollection.AddModerator(newModerator);
     }
@@ -59,7 +59,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
-            Moderator mod = (Moderator) aux;
+            var mod = aux!;
             if (mod.CheckForAuthority(EAuthority.AlterForumName))
             {
                 Name = newName;
@@ -92,7 +92,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(editor);
         if (aux != null)
         {
-            Moderator mod = (Moderator) aux;
+            var mod = aux!;
             if (mod.CheckForAuthority(EAuthority.AlterForumName))
             {
                 Description = newDescription;
@@ -134,7 +134,7 @@ public class Forum : IEntity, IAggregateRoot
                 };
             }
 
-            Moderator mod = (Moderator) aux;            
+            var mod = aux!;            
             bool value = mod.CheckForAuthority(EAuthority.DeleteForum);
             
             if (value == false)
@@ -184,7 +184,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
             if (!mod.CheckForAuthority(EAuthority.AddModerator))
             {
                 return new ForumResult()
@@ -195,7 +195,7 @@ public class Forum : IEntity, IAggregateRoot
             }
 
             bool hasNecessaryAuthorities = true;
-            foreach(EAuthority authority in authorities)
+            foreach(var authority in authorities)
                 hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
             
             if (hasNecessaryAuthorities == false)
@@ -206,7 +206,7 @@ public class Forum : IEntity, IAggregateRoot
                 };
             }
 
-            Moderator newModerator = new Moderator(newModeratorUserId, authorities);
+            var newModerator = new Moderator(newModeratorUserId, authorities);
             ModeratorCollection.AddModerator(newModerator);            
             return new ForumResult()
             {
@@ -230,7 +230,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
-            Moderator mod = (Moderator) aux;
+            var mod = aux!;
             if (!mod.CheckForAuthority(EAuthority.AlterModerator))
             {
                 return new ForumResult()
@@ -241,7 +241,7 @@ public class Forum : IEntity, IAggregateRoot
             }
 
             bool hasNecessaryAuthorities = true;
-            foreach(EAuthority authority in newAuthorities)
+            foreach(var authority in newAuthorities)
                 hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
             
             if (hasNecessaryAuthorities == false)
@@ -285,7 +285,7 @@ public class Forum : IEntity, IAggregateRoot
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
         {
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
             if (!mod.CheckForAuthority(EAuthority.DeleteModerator))
             {
                 return new ForumResult()
@@ -348,7 +348,7 @@ public class Forum : IEntity, IAggregateRoot
             if (alreadyExist != null)
                 return new ForumResult () { Value = false, Result = "User is already BlackListed." };
 
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
             bool successful = false;
 
             if (canComment != null && canPost != null && mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
@@ -394,7 +394,7 @@ public class Forum : IEntity, IAggregateRoot
                 return new ForumResult () { Value = false, Result = "User to be updated is not BlackListed." };
             
             BlackListed blackListedUser = (BlackListed) blackListedUserExist;
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
 
             if (mod.CheckForAuthority(EAuthority.BlockFromComment))
             {
@@ -433,7 +433,7 @@ public class Forum : IEntity, IAggregateRoot
                 return new ForumResult () { Value = false, Result = "User to be updated is not BlackListed." };
             
             BlackListed blackListedUser = (BlackListed) blackListedUserExist;
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
 
             if (mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
@@ -471,7 +471,7 @@ public class Forum : IEntity, IAggregateRoot
             if (blackListedUserExist == null)
                 return new ForumResult () { Value = false, Result = "User to be removed is not Blacklisted." };
 
-            Moderator mod = (Moderator) aux;
+            Moderator mod = aux!;
             BlackListed blackListedUser = (BlackListed) blackListedUserExist;
 
             if (mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
