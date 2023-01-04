@@ -1,9 +1,14 @@
+
+
 using ForumAggregator.Application.DependencyInjection;
 using ForumAggregator.Infraestructure.DependencyInjection;
 using ForumAggregator.Infraestructure.DbContext;
+using ForumAggregator.WebApi.Controllers.Authentication;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,9 @@ builder.Services.AddInfraestructure();
 builder.Services.AddApplication();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 
 var app = builder.Build();
 

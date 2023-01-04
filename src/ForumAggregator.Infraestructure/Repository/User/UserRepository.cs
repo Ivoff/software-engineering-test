@@ -65,4 +65,10 @@ public class UserRepository: IUserRepository
 
         return _dbContext.SaveChanges() > 0;
     }
+
+    public byte[] GetUserSalt(Guid id)
+    {
+        Infraestructure.Models.User user = _dbContext.Users.First(user => user.Id == id);
+        return user.Salt;
+    }
 }

@@ -15,6 +15,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserRegistrationUseCase, UserRegistrationUserCase>();
+        services.AddScoped<IUserLoginUseCase, UserLoginUseCase>();
         
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         

@@ -11,4 +11,6 @@ public interface IUserRepository
     public bool Save(Domain.UserRegistry.User entity);
 
     public bool Save(Domain.UserRegistry.User entity, byte[] salt);
+
+    public byte[] GetUserSalt(Guid id);
 }

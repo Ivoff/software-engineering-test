@@ -25,5 +25,7 @@ public class AutoMapping : Profile
                 domainUser => domainUser.Deleted,
                 opts => opts.MapFrom(infraUser => infraUser.Deleted)
             ).ReverseMap();
+        
+        CreateMap<ForumAggregator.Domain.UserRegistry.User, ForumAggregator.Application.Services.UserAppServiceModel>();
     }
 }
