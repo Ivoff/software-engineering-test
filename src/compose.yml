@@ -1,4 +1,16 @@
 services:
+  postgres_database: # psql --user=postgres --host=database --port=5432
+    image: postgres:latest
+    hostname: postgres_database
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: forum_aggregator
+    networks:
+      - app-net
+  
   backend:
       build:
         context: .
@@ -9,16 +21,8 @@ services:
       networks:
         - app-net
       depends_on:
-        - database
-
-  database:
-    image: postgres:latest
-    hostname: database
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-    networks:
-      - app-net
+        - postgres_database
 
 networks:
-  app-net: {}
+  app-net:
+    driver: bridge

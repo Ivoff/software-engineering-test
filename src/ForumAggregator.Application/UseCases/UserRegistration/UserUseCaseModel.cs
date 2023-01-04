@@ -1,4 +1,4 @@
-namespace ForumAggregator.Application.UseCases.UserRegistration;
+namespace ForumAggregator.Application.UseCases;
 
 using System;
 

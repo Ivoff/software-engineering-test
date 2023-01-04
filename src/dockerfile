@@ -1,6 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as builder
 WORKDIR /src
 COPY . /src
+# RUN dotnet tool install --global --version 6.0.8 dotnet-ef
+RUN dotnet restore
+# ENV PATH="${PATH}:/root/.dotnet/tools"
+# RUN dotnet-ef --project ./ForumAggregator.Infraestructure/ForumAggregator.Infraestructure.csproj database update
+RUN dotnet build
 RUN dotnet publish -c Release -o ./build
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0

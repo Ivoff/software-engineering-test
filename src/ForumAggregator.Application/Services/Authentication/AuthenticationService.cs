@@ -1,15 +1,15 @@
-namespace ForumAggregator.Application.Services.Authentication;
+namespace ForumAggregator.Application.Services;
 
 using System;
 
 public class AuthenticationService : IAuthenticationService
 {
-    public string GenerateToken(Guid userId, string userName)
+    public string GenerateCookie(Guid userId, string userName)
     {
         throw new NotImplementedException();
     }
 
-    public bool AuthenticateToken(string token)
+    public bool AuthenticateCookie(string token)
     {
         throw new NotImplementedException();
     }

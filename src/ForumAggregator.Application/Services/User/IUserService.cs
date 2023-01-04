@@ -1,4 +1,4 @@
-namespace ForumAggregator.Application.Services.User;
+namespace ForumAggregator.Application.Services;
 
 public interface IUserService
 {

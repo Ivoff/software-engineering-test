@@ -1,8 +1,8 @@
-namespace ForumAggregator.Application.Services.Authentication;
+namespace ForumAggregator.Application.Services;
 
 public interface IAuthenticationService
 {
-    public string GenerateToken(Guid userId, string userName);
+    public string GenerateCookie(Guid userId, string userName);
 
-    public bool AuthenticateToken(string token);
+    public bool AuthenticateCookie(string token);
 }

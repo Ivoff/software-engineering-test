@@ -1,6 +1,6 @@
-namespace ForumAggregator.Application.UseCases.UserRegistration;
+namespace ForumAggregator.Application.UseCases;
 
 public interface IUserRegistrationUseCase
 {
-    public UserUseCaseModel Register(string name, string email, string password);
+    public UserUseCaseResult Register(string name, string email, string password);
 }
