@@ -2,7 +2,7 @@ namespace ForumAggregator.Domain.Services;
 
 using ForumAggregator.Domain.Shared.Interfaces;
 
-public record ForumContentModerationResult: IDomainResult<bool>
+public record UserServiceResult: IDomainResult<bool>
 {
     public bool Value { get; init; }
 

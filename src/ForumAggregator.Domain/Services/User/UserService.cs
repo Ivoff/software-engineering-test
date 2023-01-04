@@ -1,5 +1,6 @@
 namespace ForumAggregator.Domain.Services;
 
+using System;
 using ForumAggregator.Domain.Shared.Interfaces;
 using UserRegistry;
 
@@ -17,5 +18,10 @@ public class UserService : IUserService
     {
         User? user = _userRepository.GetByName(userName);
         return user == null;
+    }
+
+    public UserServiceResult DeleteUserContent(User user)
+    {
+        throw new NotImplementedException();
     }
 }

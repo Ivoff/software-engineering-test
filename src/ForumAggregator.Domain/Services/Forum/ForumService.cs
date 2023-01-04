@@ -7,6 +7,6 @@ public class ForumService : IForumService
 {
     public bool IsForumNameUnique(string forumName)
     {
-        return false;
+        throw new NotImplementedException();
     }
 }

@@ -60,6 +60,22 @@ public class UserService: IUserService
         return _mapper.Map<UserAppServiceModel>(user);
     }
 
+    public ICollection<UserAppServiceModel> GetAll()
+    {
+        return _userRepository.GetAll().Select(
+            user => _mapper.Map<UserAppServiceModel>(user)
+        ).ToList();
+    }
+
+    public UserAppServiceModel? GetUserByName(string name)
+    {
+        User? user = _userRepository.GetByName(name);
+        if (user == null)
+            return null;
+            
+        return _mapper.Map<UserAppServiceModel>(user);
+    }
+
     public ServiceResult UpdateUser(UserAppServiceModel user)
     {
         _logger.LogCritical(_appContext.UserId.ToString());

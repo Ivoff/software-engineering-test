@@ -31,7 +31,7 @@ public class Forum : IEntity, IAggregateRoot
     {
         Id = Guid.NewGuid();
         OwnerId = ownerId;
-        Name = name;
+        Name = name.ToLower();
         Description = description;
         ModeratorCollection = new ModeratorCollection();
         BlackListedCollection = new BlackListedCollection();
@@ -521,7 +521,7 @@ public class Forum : IEntity, IAggregateRoot
         {
             Id = forumId,
             OwnerId = ownerId,
-            Name = name,
+            Name = name.ToLower(),
             Description = description,
             ModeratorCollection = moderatorCollection,
             BlackListedCollection = blackListedCollection,

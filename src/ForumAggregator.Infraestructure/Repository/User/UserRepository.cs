@@ -98,4 +98,11 @@ public class UserRepository: IUserRepository
         Infraestructure.Models.User user = _dbContext.Users.First(user => user.Id == id);
         return user.Salt;
     }
+
+    public ICollection<Domain.UserRegistry.User> GetAll()
+    {
+        return _dbContext.Users.Select(
+            user => _mapper.Map<Domain.UserRegistry.User>(user)
+        ).ToList();
+    }
 }

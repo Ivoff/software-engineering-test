@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Services.ForumContentModerationService;
+namespace ForumAggregator.Domain.Services;
 
 using System;
 using ForumAggregator.Domain.CommentRegistry;

@@ -24,9 +24,9 @@ public class User: IEntity
     public User (string name, string email, string password)
     {
         Id = Guid.NewGuid();
-        Name = name;
+        Name = name.ToLower();
         Password = password;
-        Email = email;
+        Email = email.ToLower();
         Deleted = false;
     }
 
@@ -119,7 +119,7 @@ public class User: IEntity
         return new User()
         {
             Id = id,
-            Name = name,
+            Name = name.ToLower(),
             Password = password,
             Email = email,
             Deleted = deleted

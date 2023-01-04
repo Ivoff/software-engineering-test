@@ -6,7 +6,7 @@ using ForumAggregator.Domain.ForumRegistry;
 using ForumAggregator.Domain.CommentRegistry;
 using ForumAggregator.Domain.PostRegistry;
 using ForumAggregator.Domain.Shared.Interfaces;
-using ForumAggregator.Domain.Services.ForumContentModerationService;
+using ForumAggregator.Domain.Services;
 
 public class ForumContentModerationTests
 {

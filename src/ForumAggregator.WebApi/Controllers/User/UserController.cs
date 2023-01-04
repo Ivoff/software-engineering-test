@@ -72,14 +72,57 @@ public class UserController: ControllerBase
     [AllowAnonymous]
     public IActionResult ReadUser(string userId)
     {
-        Console.WriteLine(userId);
-        throw new NotImplementedException();
+        UserAppServiceModel? user;
+        Guid userGuid = Guid.Empty;
+
+        try
+        {
+            userGuid = Guid.Parse(userId);
+        }
+        catch(Exception e)
+        {
+            string errorMessage = e.Message;
+            user = _userService.GetUserByName(userId);
+            
+            if (user == null)
+            {
+                return NotFound(string.Join("\n", new[]{errorMessage, $"User {userId} not found."}));
+            }
+
+            return Ok(new ReadUserReponse(
+                user.Id,
+                user.Name,
+                user.Email,
+                user.Deleted
+            ));
+        }
+
+        user = _userService.GetUser(userGuid);
+        if (user == null)
+        {
+            return NotFound($"User {userId} not found.");
+        }
+
+        return Ok(new ReadUserReponse(
+            user.Id,
+            user.Name,
+            user.Email,
+            user.Deleted
+        ));
     }
 
     [HttpGet("user")]
     [AllowAnonymous]
     public IActionResult ReadAllUsers()
     {
-        throw new NotImplementedException();
+        return Ok(
+            _userService.GetAll().Select(
+                user => new ReadUserReponse(
+                    user.Id,
+                    user.Name,
+                    user.Email,
+                    user.Deleted
+            ))
+        );
     }
 }
