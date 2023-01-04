@@ -4,6 +4,5 @@ using System;
 
 public record AuthenticationResponse(
     Guid Id,
-    string Name,
-    string Token
+    string Name
 );

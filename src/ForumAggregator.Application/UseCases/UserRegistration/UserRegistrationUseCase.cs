@@ -1,7 +1,6 @@
 namespace ForumAggregator.Application.UseCases;
 
 using AutoMapper;
-using System.Text;
 using ForumAggregator.Domain.Shared.Interfaces;
 using ForumAggregator.Application.Services;
 using ForumAggregator.Domain.UserRegistry;
