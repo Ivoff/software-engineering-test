@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Services.ForumService;
+namespace ForumAggregator.Domain.Services;
 
 using ForumAggregator.Domain.Shared.Interfaces;
 

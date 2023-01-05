@@ -28,13 +28,13 @@ public class UserAuthenticationUserCase : IUserAuthenticationUseCase
         _domainUserService = domainUserService;
     }
 
-    public UserUseCaseResult Register(string name, string email, string password)
+    public EntityUseCaseResult Register(string name, string email, string password)
     {
         if (_userService.UserEmailExist(email))
-            return new UserUseCaseResult(false, "User already registered.", null);
+            return new EntityUseCaseResult(false, "User already registered.", null);
         
         if (!_domainUserService.IsUserNameUnique(name))
-            return new UserUseCaseResult(false, "UserName already taken.", null);
+            return new EntityUseCaseResult(false, "UserName already taken.", null);
 
         byte[] salt;
         string hashedPassword = _passwordService.HashPassword(password, out salt);
@@ -43,20 +43,20 @@ public class UserAuthenticationUserCase : IUserAuthenticationUseCase
 
         bool result = _userRepository.Save(newUser, salt);    
 
-        return new UserUseCaseResult(
+        return new EntityUseCaseResult(
             result, 
             result ? string.Empty : "Something wrong happened during data persistance", 
-            result ? new UserUseCaseModel(newUser.Id, newUser.Name) : null
+            result ? new EntityUseCaseDto(newUser.Id, newUser.Name) : null
         );
     }
 
-    public UserUseCaseResult Login(string email, string password)
+    public EntityUseCaseResult Login(string email, string password)
     {
         User? userExist = _userRepository.Get(email);
         
         if (userExist == null)
         {
-            return new UserUseCaseResult(false, "User not registered.", null);
+            return new EntityUseCaseResult(false, "User not registered.", null);
         }
         
         User user = (User) userExist;
@@ -64,10 +64,10 @@ public class UserAuthenticationUserCase : IUserAuthenticationUseCase
 
         bool result = _passwordService.CheckPassword(password, user.Password, salt);
 
-        return new UserUseCaseResult(
+        return new EntityUseCaseResult(
             result,
             result ? string.Empty : "E-mail or/and Password incorrect.",
-            result ? new UserUseCaseModel(user.Id, user.Name) : null
+            result ? new EntityUseCaseDto(user.Id, user.Name) : null
         );
     }
 }

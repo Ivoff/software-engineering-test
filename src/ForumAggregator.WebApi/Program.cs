@@ -3,6 +3,7 @@ using ForumAggregator.Infraestructure.DependencyInjection;
 using ForumAggregator.Infraestructure.DbContext;
 using ForumAggregator.WebApi.Controllers.Authentication;
 using ForumAggregator.WebApi.Controllers.User;
+using ForumAggregator.WebApi.Controllers.Forum;
 using ForumAggregator.Domain.DependencyInjection;
 
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,9 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateForumRequest>, CreateForumRequestValidator>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

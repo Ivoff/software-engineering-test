@@ -111,9 +111,7 @@ public class ForumRepository: IForumRepository
             _dbContext.Update(forumExist);
         }
 
-        return _dbContext.SaveChanges();
-
-        throw new NotImplementedException();
+        return _dbContext.SaveChanges() > 0;
     }
 
     private void PrintForum(Domain.ForumRegistry.Forum forum)

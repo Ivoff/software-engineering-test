@@ -1,3 +1,5 @@
+namespace ForumAggregator.Application;
+
 using AutoMapper;
 
 public class AutoMapping : Profile
@@ -72,5 +74,28 @@ public class AutoMapping : Profile
             ).ReverseMap();
         
         CreateMap<ForumAggregator.Infraestructure.Models.BlackListed, ForumAggregator.Domain.ForumRegistry.BlackListed>().ReverseMap();
+
+        CreateMap<ForumAggregator.Application.Services.ForumAppServiceModel, ForumAggregator.Domain.ForumRegistry.Forum>()
+            .ForMember(
+                domainForum => domainForum.Id,
+                opts => opts.MapFrom(appServiceForum => appServiceForum.Id)
+            )
+            .ForMember(
+                domainForum => domainForum.OwnerId,
+                opts => opts.MapFrom(appServiceForum => appServiceForum.OwnerId)
+            )
+            .ForMember(
+                domainForum => domainForum.Name,
+                opts => opts.MapFrom(appServiceForum => appServiceForum.Name)
+            )
+            .ForMember(
+                domainForum => domainForum.Description,
+                opts => opts.MapFrom(appServiceForum => appServiceForum.Description)
+            )
+            .ForMember(
+                domainForum => domainForum.Deleted,
+                opts => opts.MapFrom(appServiceForum => appServiceForum.Deleted)
+            ).ReverseMap();
+
     }
 }

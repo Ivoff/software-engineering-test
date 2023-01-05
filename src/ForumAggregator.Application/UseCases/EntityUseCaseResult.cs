@@ -1,7 +1,7 @@
 namespace ForumAggregator.Application.UseCases;
 
-public record UserUseCaseResult(
+public record EntityUseCaseResult(
     bool Value,
     string Result,
-    UserUseCaseModel? UseCaseModel
+    EntityUseCaseDto? EntityUseCaseDto
 );

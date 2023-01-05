@@ -43,24 +43,24 @@ public class AuthenticationController: ControllerBase
     {
         _logger.LogInformation("Register Controller");
 
-        ValidationResult validationResult = _registerRequestValidator.Validate(registerRequest);
+        var validationResult = _registerRequestValidator.Validate(registerRequest);
         if (validationResult.IsValid == false)
         {
             return BadRequest(validationResult.ToString());
         }
 
-        UserUseCaseResult result = _userAuthenticationUseCase.Register(
+        var result = _userAuthenticationUseCase.Register(
             registerRequest.Name,
             registerRequest.Email,
             registerRequest.Password
         );
         
-        if (result.Value == false || result.UseCaseModel == null)
+        if (result.Value == false || result.EntityUseCaseDto == null)
         {
             return UnprocessableEntity(result.Result);
         }
 
-        UserUseCaseModel registrationResult = (UserUseCaseModel) result.UseCaseModel;
+        var registrationResult = result.EntityUseCaseDto!;
         _authenticationService.GenerateCookie(registrationResult.Id, registrationResult.Name);
 
         return Ok(new AuthenticationResponse(registrationResult.Id, registrationResult.Name));
@@ -72,7 +72,7 @@ public class AuthenticationController: ControllerBase
     {
         _logger.LogInformation("Login Controller");
 
-        ValidationResult validationResult = _loginRequestValidator.Validate(loginRequest);
+        var validationResult = _loginRequestValidator.Validate(loginRequest);
         if (validationResult.IsValid == false)
         {
             return BadRequest(validationResult.ToString());
@@ -86,17 +86,17 @@ public class AuthenticationController: ControllerBase
             return Ok(new AuthenticationResponse(user.Id, user.Name));
         }
 
-        UserUseCaseResult result = _userAuthenticationUseCase.Login(
+        var result = _userAuthenticationUseCase.Login(
             loginRequest.Email,
             loginRequest.Password
         );
 
-        if (result.Value == false || result.UseCaseModel == null)
+        if (result.Value == false || result.EntityUseCaseDto == null)
         {
             return Unauthorized(result.Result);
         }
 
-        UserUseCaseModel loginResult = (UserUseCaseModel) result.UseCaseModel;
+        var loginResult = result.EntityUseCaseDto!;
         _authenticationService.GenerateCookie(loginResult.Id, loginResult.Name);
 
         return Ok(new AuthenticationResponse(loginResult.Id, loginResult.Name));

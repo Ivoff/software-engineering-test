@@ -2,7 +2,7 @@ namespace ForumAggregator.Application.UseCases;
 
 using System;
 
-public record UserUseCaseModel(
+public record EntityUseCaseDto(
     Guid Id,
     string Name
 );

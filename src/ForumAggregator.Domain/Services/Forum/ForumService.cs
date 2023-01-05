@@ -1,4 +1,4 @@
-namespace ForumAggregator.Domain.Services.ForumService;
+namespace ForumAggregator.Domain.Services;
 
 using System;
 using ForumAggregator.Domain.Shared.Interfaces;
@@ -15,6 +15,6 @@ public class ForumService : IForumService
 
     public bool IsForumNameUnique(string forumName)
     {
-        return _forumRepository.GetByName(forumName) != null;
+        return _forumRepository.GetByName(forumName) == null;
     }
 }
