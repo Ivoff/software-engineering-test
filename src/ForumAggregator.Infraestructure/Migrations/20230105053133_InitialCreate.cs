@@ -10,21 +10,6 @@ namespace ForumAggregator.Infraestructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Forums",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "Now()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Forums", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -39,6 +24,28 @@ namespace ForumAggregator.Infraestructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Forums",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Deleted = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "Now()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Forums", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Forums_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,6 +210,11 @@ namespace ForumAggregator.Infraestructure.Migrations
                 name: "IX_Comments_PostId",
                 table: "Comments",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Forums_OwnerId",
+                table: "Forums",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ModeratorAuthorities_ModeratorId",

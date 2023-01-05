@@ -3,7 +3,6 @@ namespace ForumAggregator.WebApi.Controllers.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FluentValidation;
-using FluentValidation.Results;
 
 using ForumAggregator.Application.Services;
 

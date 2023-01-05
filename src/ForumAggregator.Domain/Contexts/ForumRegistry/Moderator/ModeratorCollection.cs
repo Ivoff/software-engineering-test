@@ -9,7 +9,7 @@ public class ModeratorCollection
 {
     // Fields & Properties
 
-    // IMPORTANT: This is public so it can be checked in tests, is should never be accessed directly
+    // IMPORTANT: This is public so it can be checked in tests, it should never be accessed directly
     public ICollection<Moderator> Moderators { get; init; }
 
     // Constructors

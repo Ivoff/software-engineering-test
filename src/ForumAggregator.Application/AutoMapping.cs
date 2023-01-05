@@ -30,5 +30,47 @@ public class AutoMapping : Profile
             ForumAggregator.Domain.UserRegistry.User, 
             ForumAggregator.Application.Services.UserAppServiceModel
         >().ReverseMap();
+
+        CreateMap<ForumAggregator.Infraestructure.Models.Forum, ForumAggregator.Domain.ForumRegistry.Forum>()
+            .ForMember(
+                domainForum => domainForum.Id,
+                opts => opts.MapFrom(infraForum => infraForum.Id)
+            )
+            .ForMember(
+                domainForum => domainForum.OwnerId,
+                opts => opts.MapFrom(infraForum => infraForum.OwnerId)
+            )
+            .ForMember(
+                domainForum => domainForum.Name,
+                opts => opts.MapFrom(infraForum => infraForum.Name)
+            )
+            .ForMember(
+                domainForum => domainForum.Description,
+                opts => opts.MapFrom(infraForum => infraForum.Description)
+            )
+            .ForMember(
+                domainForum => domainForum.Deleted,
+                opts => opts.MapFrom(infraForum => infraForum.Deleted)
+            ).ReverseMap();
+
+        CreateMap<ForumAggregator.Infraestructure.Models.Moderator, ForumAggregator.Domain.ForumRegistry.Moderator>()
+            .ForMember(
+                domainModerator => domainModerator.Id,
+                opts => opts.MapFrom(infraModerator => infraModerator.Id)
+            )
+            .ForMember(
+                domainModerator => domainModerator.UserId,
+                opts => opts.MapFrom(infraModerator => infraModerator.UserId)
+            )
+            .ForMember(
+                domainModerator => domainModerator.Deleted,
+                opts => opts.MapFrom(infraModerator => infraModerator.Deleted)
+            )
+            .ForMember(
+                domainModerator => domainModerator.Authorities,
+                opts => opts.MapFrom(infraModerator =>  infraModerator.ModeratorAuthorities.Select(auth => auth.Authority))
+            ).ReverseMap();
+        
+        CreateMap<ForumAggregator.Infraestructure.Models.BlackListed, ForumAggregator.Domain.ForumRegistry.BlackListed>().ReverseMap();
     }
 }

@@ -20,5 +20,5 @@ public class Moderator
 
     public DateTime CreatedAt { get; set; }
 
-    ICollection<ModeratorAuthority> ModeratorAuthorities { get; set; } = default!;
+    public ICollection<ModeratorAuthority> ModeratorAuthorities { get; set; } = default!;
 }

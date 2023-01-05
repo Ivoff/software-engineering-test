@@ -2,10 +2,15 @@ namespace ForumAggregator.Infraestructure.Models;
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Forum
 {
     public Guid Id { get; set; }
+
+    [ForeignKey("User")]
+    public Guid OwnerId { get; set; }
+    public virtual User Owner { get; set; } = default!;
 
     [Required]
     public string Name { get; set; } = default!;
@@ -17,7 +22,7 @@ public class Forum
 
     public DateTime CreatedAt { get; set; }
 
-    ICollection<Moderator> Moderators { get; set; } = default!;
+    public ICollection<Moderator> Moderators { get; set; } = default!;
     
-    ICollection<BlackListed> BlackList { get; set; } = default!;
+    public ICollection<BlackListed> BlackList { get; set; } = default!;
 }

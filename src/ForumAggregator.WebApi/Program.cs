@@ -21,7 +21,7 @@ builder.Services.AddApplication();
 builder.Services.AddControllers();
 // Need to reference domain so that Domain Services can be registered
 // Just like the need to reference Infraestructure so that 
-// Infraestructure Services can be registered
+// Infraestructure Services can be registered as well
 builder.Services.AddDomain();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

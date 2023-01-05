@@ -14,7 +14,8 @@ public class Moderator : IEntity
 
     public Guid UserId { get; init; }
 
-    private ICollection<EAuthority> Authorities { get; init; } = default!;
+    // IMPORTANT: This should never be accessed outside of this class
+    public ICollection<EAuthority> Authorities { get; init; } = default!;
 
     public bool Deleted { get; private set; } = default!;
 

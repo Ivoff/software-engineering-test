@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ForumAggregator.Infraestructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230103224613_InitialCreate")]
+    [Migration("20230105053133_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,7 +119,12 @@ namespace ForumAggregator.Infraestructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Forums");
                 });
@@ -247,7 +252,7 @@ namespace ForumAggregator.Infraestructure.Migrations
             modelBuilder.Entity("ForumAggregator.Infraestructure.Models.BlackListed", b =>
                 {
                     b.HasOne("ForumAggregator.Infraestructure.Models.Forum", "Forum")
-                        .WithMany()
+                        .WithMany("BlackList")
                         .HasForeignKey("ForumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -288,10 +293,21 @@ namespace ForumAggregator.Infraestructure.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("ForumAggregator.Infraestructure.Models.Forum", b =>
+                {
+                    b.HasOne("ForumAggregator.Infraestructure.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("ForumAggregator.Infraestructure.Models.Moderator", b =>
                 {
                     b.HasOne("ForumAggregator.Infraestructure.Models.Forum", "Forum")
-                        .WithMany()
+                        .WithMany("Moderators")
                         .HasForeignKey("ForumId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -310,7 +326,7 @@ namespace ForumAggregator.Infraestructure.Migrations
             modelBuilder.Entity("ForumAggregator.Infraestructure.Models.ModeratorAuthority", b =>
                 {
                     b.HasOne("ForumAggregator.Infraestructure.Models.Moderator", "Moderator")
-                        .WithMany()
+                        .WithMany("ModeratorAuthorities")
                         .HasForeignKey("ModeratorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -335,6 +351,18 @@ namespace ForumAggregator.Infraestructure.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Forum");
+                });
+
+            modelBuilder.Entity("ForumAggregator.Infraestructure.Models.Forum", b =>
+                {
+                    b.Navigation("BlackList");
+
+                    b.Navigation("Moderators");
+                });
+
+            modelBuilder.Entity("ForumAggregator.Infraestructure.Models.Moderator", b =>
+                {
+                    b.Navigation("ModeratorAuthorities");
                 });
 #pragma warning restore 612, 618
         }

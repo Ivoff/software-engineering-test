@@ -15,6 +15,8 @@ public static class ServiceCollectionExtension
     public static IServiceCollection AddInfraestructure(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IForumRepository, ForumRepository>();
+        
         services.AddDbContext<DatabaseContext>((options) => {
             options.UseNpgsql(@"Host=localhost;Port=5000;Username=postgres;Password=postgres;Database=forum_aggregator");
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);

@@ -19,9 +19,11 @@ public class Forum : IEntity, IAggregateRoot
 
     public bool Deleted { get; private set; } = default!;
 
-    private ModeratorCollection ModeratorCollection { get; init; } = default!;
+    // IMPORTANT: This should never be accessed outside of this class
+    public ModeratorCollection ModeratorCollection { get; init; } = default!;
 
-    private BlackListedCollection BlackListedCollection { get; init; } = default!;
+    // IMPORTANT: This should never be accessed outside of this class
+    public BlackListedCollection BlackListedCollection { get; init; } = default!;
 
     // Constructors
 
