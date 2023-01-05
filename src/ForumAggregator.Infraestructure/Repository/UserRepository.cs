@@ -43,7 +43,7 @@ public class UserRepository: IUserRepository
 
     public bool Save(Domain.UserRegistry.User entity)
     {
-        Infraestructure.Models.User newUser = _mapper.Map<Infraestructure.Models.User>(entity);
+        var newUser = _mapper.Map<Infraestructure.Models.User>(entity);
         
         if (_dbContext.Users.Where(user => user.Id == newUser.Id).Count() == 0)
         {
@@ -51,7 +51,7 @@ public class UserRepository: IUserRepository
         }
         else
         {
-            Infraestructure.Models.User currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
+            var currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
             
             currUser.Name = newUser.Name;
             currUser.Email = newUser.Email;
@@ -70,7 +70,7 @@ public class UserRepository: IUserRepository
 
     public bool Save(Domain.UserRegistry.User entity, byte[] salt)
     {
-        Infraestructure.Models.User newUser = _mapper.Map<Infraestructure.Models.User>(entity);
+        var newUser = _mapper.Map<Infraestructure.Models.User>(entity);
         newUser.Salt = salt;
 
         if (_dbContext.Users.Where(user => user.Id == newUser.Id).Count() == 0)
@@ -79,7 +79,7 @@ public class UserRepository: IUserRepository
         }
         else 
         {
-            Infraestructure.Models.User currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
+            var currUser = _dbContext.Users.Where(user =>user.Id == newUser.Id).First();
             
             currUser.Name = newUser.Name;
             currUser.Email = newUser.Email;
@@ -95,7 +95,7 @@ public class UserRepository: IUserRepository
 
     public byte[] GetUserSalt(Guid id)
     {
-        Infraestructure.Models.User user = _dbContext.Users.First(user => user.Id == id);
+        var user = _dbContext.Users.First(user => user.Id == id);
         return user.Salt;
     }
 

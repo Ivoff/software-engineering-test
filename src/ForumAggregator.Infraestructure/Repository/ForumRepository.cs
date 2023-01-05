@@ -78,6 +78,41 @@ public class ForumRepository: IForumRepository
 
     public bool Save(Domain.ForumRegistry.Forum forum)
     {
+        var forumExist = _dbContext.Forums.FirstOrDefault(x => x.Id == forum.Id);
+        
+        if (forumExist == null)
+        {
+            var newForum = _mapper.Map<Infraestructure.Models.Forum>(forum);
+            
+            newForum.Moderators = _mapper.Map<
+                ICollection<Domain.ForumRegistry.Moderator>, ICollection<Infraestructure.Models.Moderator>
+            >(forum.ModeratorCollection.Moderators).ToList();
+
+            newForum.BlackList = _mapper.Map<
+                ICollection<Domain.ForumRegistry.BlackListed>, ICollection<Infraestructure.Models.BlackListed>
+            >(forum.BlackListedCollection.BlackList).ToList();
+
+            _dbContext.Add(newForum);
+        }
+        else
+        {
+            forumExist.Name = forum.Name;
+            forumExist.Description = forum.Description;
+            forumExist.Deleted = forum.Deleted;
+            
+            forumExist.Moderators = _mapper.Map<
+                ICollection<Domain.ForumRegistry.Moderator>, ICollection<Infraestructure.Models.Moderator>
+            >(forum.ModeratorCollection.Moderators).ToList();
+
+            forumExist.BlackList = _mapper.Map<
+                ICollection<Domain.ForumRegistry.BlackListed>, ICollection<Infraestructure.Models.BlackListed>
+            >(forum.BlackListedCollection.BlackList).ToList();
+
+            _dbContext.Update(forumExist);
+        }
+
+        return _dbContext.SaveChanges();
+
         throw new NotImplementedException();
     }
 
