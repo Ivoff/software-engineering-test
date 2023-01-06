@@ -264,14 +264,26 @@ public class Forum : IEntity, IAggregateRoot
             }
 
             bool hasNecessaryAuthorities = true;
+            bool isValidAuthority = true;
             foreach(var authority in newAuthorities)
+            {
                 hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
-            
+                isValidAuthority = isValidAuthority && Enum.IsDefined(typeof(EAuthority), authority);
+            }
+
             if (hasNecessaryAuthorities == false)
             {
                 return new ForumResult(){
                     Value = false,
                     Result = "Actor User has to possess all Authorities that are being given."
+                };
+            }
+
+            if (isValidAuthority == false)
+            {
+                return new ForumResult(){
+                    Value = false,
+                    Result = "At least one authority provided is invalid."
                 };
             }
 
@@ -282,7 +294,7 @@ public class Forum : IEntity, IAggregateRoot
                 return new ForumResult()
                 {
                     Value = result.Value,
-                    Result = result.Result
+                    Result = result.Value ? updated.Id.ToString() : result.Result
                 };
             }            
             
@@ -321,11 +333,11 @@ public class Forum : IEntity, IAggregateRoot
             Moderator? deleted = ModeratorCollection.GetModerator(moderatorId);
             if (deleted != null)
             {
-                var result = ModeratorCollection.RemoveModerator((Moderator)deleted);
+                var result = ModeratorCollection.RemoveModerator(deleted!);
                 return new ForumResult()
                 {
                     Value = result.Value,
-                    Result = result.Result
+                    Result = result.Value ? deleted.Id.ToString() : result.Result
                 };
             } 
 

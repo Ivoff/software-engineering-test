@@ -30,7 +30,7 @@ builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateForumRequest>, CreateForumRequestValidator>();
-builder.Services.AddScoped<IValidator<AddModeratorRequest>, AddModeratorRequestValidator>();
+builder.Services.AddScoped<IValidator<ModeratorRequest>, ModeratorRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateForumRequest>, UpdateForumRequestValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

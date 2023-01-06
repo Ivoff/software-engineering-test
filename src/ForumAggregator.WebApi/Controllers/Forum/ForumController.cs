@@ -17,7 +17,7 @@ public class ForumController: ControllerBase
     private readonly IForumUseCase _forumUseCase;
     private readonly ForumAggregator.Application.Services.IForumService _forumAppService;
     private readonly IValidator<CreateForumRequest> _createForumRequestValidator;
-    private readonly IValidator<AddModeratorRequest> _addModeratorRequestValidator;
+    private readonly IValidator<ModeratorRequest> _moderatorRequestValidator;
     private readonly IValidator<UpdateForumRequest> _updateForumRequestValidator;
     private readonly IMapper _mapper;
 
@@ -26,7 +26,7 @@ public class ForumController: ControllerBase
         IValidator<CreateForumRequest> createForumRequestValidator,
         IMapper mapper,
         ForumAggregator.Application.Services.IForumService forumAppService,
-        IValidator<AddModeratorRequest> addModeratorRequestValidator,
+        IValidator<ModeratorRequest> addModeratorRequestValidator,
         IValidator<UpdateForumRequest> updateForumRequestValidator
     )
     {
@@ -34,7 +34,7 @@ public class ForumController: ControllerBase
         _createForumRequestValidator = createForumRequestValidator;
         _mapper = mapper;
         _forumAppService = forumAppService;
-        _addModeratorRequestValidator = addModeratorRequestValidator;
+        _moderatorRequestValidator = addModeratorRequestValidator;
         _updateForumRequestValidator = updateForumRequestValidator;
     }
 
@@ -76,9 +76,12 @@ public class ForumController: ControllerBase
 
     [HttpPost("forum/moderator")]
     [Authorize]
-    public IActionResult AddModerator(AddModeratorRequest addModeratorRequest)
+    public IActionResult AddModerator(ModeratorRequest ModeratorRequest)
     {
-        var validationResult = _addModeratorRequestValidator.Validate(addModeratorRequest);
+        var validationResult = _moderatorRequestValidator.Validate(ModeratorRequest, (options) => {
+            options.IncludeRuleSets("Default");
+        });
+
         if (validationResult.IsValid == false)
         {
             return BadRequest(validationResult.ToString());
@@ -87,9 +90,9 @@ public class ForumController: ControllerBase
         var moderators =_mapper.Map<
             ICollection<Controllers.Forum.Moderator>, 
             ICollection<Application.UseCases.ModeratorUseCaseModel>
-        >(addModeratorRequest.Moderators);
+        >(ModeratorRequest.Moderators);
 
-        var result = _forumUseCase.AddModerator(addModeratorRequest.ForumId, moderators);
+        var result = _forumUseCase.AddModerator(ModeratorRequest.ForumId, moderators);
 
         if (result.Value == false)
             return UnprocessableEntity(result.Result);
@@ -117,11 +120,63 @@ public class ForumController: ControllerBase
         return Ok();
     }
 
+    [HttpPatch("forum/moderator")]
+    [Authorize]
+    public IActionResult UpdateModeratorAuthorities(ModeratorRequest updateModeratorRequest)
+    {
+        var validationResult = _moderatorRequestValidator.Validate(updateModeratorRequest, (options) => {
+            options.IncludeRuleSets("Default");
+        });
+
+        if (validationResult.IsValid == false)
+        {
+            return BadRequest(validationResult.ToString());
+        }
+
+        var result = _forumUseCase.UpdateModeratorAuthorities(
+            updateModeratorRequest.ForumId,
+            _mapper.Map<ICollection<Moderator>, ICollection<ModeratorUseCaseModel>>(updateModeratorRequest.Moderators)
+        );
+
+        if (result.Value == false)
+        {
+            return UnprocessableEntity(result.Result);
+        }
+
+        return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
+    }
+
     [HttpDelete("forum")]
     [Authorize]
     public IActionResult DeleteForum()
     {
         throw new NotImplementedException();
+    }
+
+    [HttpDelete("forum/moderator")]
+    [Authorize]
+    public IActionResult DeleteModerator(ModeratorRequest deleteModeratorRequest)
+    {
+        var validationResult = _moderatorRequestValidator.Validate(deleteModeratorRequest, (options) => {
+            options.IncludeRuleSets("Delete");
+        });
+
+        if (validationResult.IsValid == false)
+        {
+            return BadRequest(validationResult.ToString());
+        }
+
+        var result = _forumUseCase.RemoveModerator(
+            deleteModeratorRequest.ForumId, 
+            _mapper.Map<ICollection<Moderator>, ICollection<ModeratorUseCaseModel>>(deleteModeratorRequest.Moderators)
+        );
+        
+        if (result.Value == false)
+        {
+            return UnprocessableEntity(result.Result);
+        }
+
+        return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
     }
 
     [HttpGet("forum/{forumId}")]

@@ -11,7 +11,7 @@ public record BlackListed(
 
 public record Moderator(
     Guid UserId,
-    ICollection<int> Authorities
+    ICollection<int>? Authorities
 );
 
 public record CreateForumRequest(

@@ -17,11 +17,12 @@ public interface IForumUseCase
 
     public EntityUseCaseResult UpdateModeratorAuthorities(Guid forumId, Guid moderatorId, ICollection<int> authorities);
 
-    public EntityUseCaseResult RemoveModerator(Guid forumId, Guid moderatorId, ICollection<int> authorities);
-
+    public EntityUseCaseResult UpdateModeratorAuthorities(Guid forumId, ICollection<ModeratorUseCaseModel> moderators);
+    public EntityUseCaseResult RemoveModerator(Guid forumId, Guid moderatorId);
+    public EntityUseCaseResult RemoveModerator(Guid forumId, ICollection<ModeratorUseCaseModel> moderators);
     public EntityUseCaseResult AddBlackListed(Guid forumId, Guid userId, bool canPost, bool canComment);
 
-    public EntityUseCaseResult UpdateBlackListed(Guid forumId, Guid userId, bool canPost, bool canComment);
+    public EntityUseCaseResult UpdateBlackListed(Guid forumId, Guid userId, bool? canPost, bool? canComment);
 
     public EntityUseCaseResult RemoveBlackListed(Guid forumId, Guid userId);
 }

@@ -20,6 +20,8 @@ public static class ServiceCollectionExtension
         services.AddDbContext<DatabaseContext>((options) => {
             options.UseNpgsql(@"Host=localhost;Port=5000;Username=postgres;Password=postgres;Database=forum_aggregator;IncludeErrorDetail=true");
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            options.EnableDetailedErrors();
+            options.EnableSensitiveDataLogging();
         });
 
         return services;

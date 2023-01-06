@@ -54,10 +54,13 @@ public class ModeratorCollection
     public ModeratorResult UpdateModerator (Guid moderatorId, ICollection<EAuthority> authorities)
     {
         var currModerator = Moderators.First(x => x.Id == moderatorId && x.Deleted == false);
-        var result = currModerator.ClearAuthorities();
         currModerator.AddAuthorities(authorities);
 
-        return result;
+        return new ModeratorResult()
+        {
+            Value = true,
+            Result = string.Empty
+        };
     }
 
     public static ModeratorCollection Load (ICollection<Moderator> moderators)
