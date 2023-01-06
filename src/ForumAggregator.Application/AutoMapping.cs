@@ -119,7 +119,53 @@ public class AutoMapping : Profile
             .ForMember(
                 domainForum => domainForum.Deleted,
                 opts => opts.MapFrom(appServiceForum => appServiceForum.Deleted)
-            ).ReverseMap();
+            );
+
+        CreateMap<ForumAggregator.Domain.ForumRegistry.Forum, ForumAggregator.Application.Services.ForumAppServiceModel>()
+            .ForMember(
+                appServiceForum => appServiceForum.Id,
+                opts => opts.MapFrom(domainForum => domainForum.Id)
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.OwnerId,
+                opts => opts.MapFrom(domainForum => domainForum.OwnerId)
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.Name,
+                opts => opts.MapFrom(domainForum => domainForum.Name)
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.Description,
+                opts => opts.MapFrom(domainForum => domainForum.Description)
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.Deleted,
+                opts => opts.MapFrom(domainForum => domainForum.Deleted)
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.Moderators,
+                opts => opts.MapFrom(domainForum => domainForum.ModeratorCollection.Moderators.Select(
+                    x => new ForumAggregator.Application.Services.ModeratorAppServiceModel(){
+                            Id = x.Id,
+                            UserId = x.UserId,
+                            Deleted = x.Deleted,
+                            Authorities = x.Authorities
+                        }
+                    )
+                )
+            )
+            .ForMember(
+                appServiceForum => appServiceForum.BlackList,
+                opts => opts.MapFrom(domainForum => domainForum.BlackListedCollection.BlackList.Select(
+                    x => new ForumAggregator.Application.Services.BlackListedAppServiceModel(){
+                        Id = x.Id,
+                        UserId = x.UserId,
+                        CanComment = x.CanComment,
+                        CanPost = x.CanPost,
+                        Deleted = x.Deleted
+                    }
+                ))
+            ).AfterMap((src, dst) => dst.BlackList.Select(x => {x.ForumId = src.Id; return x;}));
         
         // CreateMap<ForumAggregator.Domain.ForumRegistry.Forum, ForumAggregator.Application.Services.ForumAppServiceModel>()
         //     .ForMember(

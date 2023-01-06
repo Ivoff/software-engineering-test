@@ -2,7 +2,7 @@ namespace ForumAggregator.Application.Services;
 
 using System;
 
-public class BlackListed
+public class BlackListedAppServiceModel
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

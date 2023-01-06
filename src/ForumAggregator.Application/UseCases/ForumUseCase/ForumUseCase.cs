@@ -3,23 +3,27 @@ using ForumAggregator.Application.UseCases;
 using ForumAggregator.Domain.Shared.Interfaces;
 using ForumAggregator.Domain.ForumRegistry;
 using ForumAggregator.Application;
+using ForumAggregator.Application.Services;
 using System.Linq;
 
 public class ForumUseCase : IForumUseCase
 {
     private readonly IForumRepository _forumRepository;
     private readonly ForumAggregator.Domain.Services.IForumService _domainForumService;
+    private readonly ForumAggregator.Application.Services.IForumService _appForumService;
     private readonly IAppContext _appContext;
 
     public ForumUseCase(
         IForumRepository forumRepository,
         ForumAggregator.Domain.Services.IForumService domainForumService,
-        IAppContext appContext
+        IAppContext appContext,
+        ForumAggregator.Application.Services.IForumService appForumService
     )
     {
         _forumRepository = forumRepository;
         _domainForumService = domainForumService;
         _appContext = appContext;
+        _appForumService = appForumService;
     }
 
     public EntityUseCaseResult Create(
@@ -84,7 +88,7 @@ public class ForumUseCase : IForumUseCase
     {
         var forum = _forumRepository.Get(forumId);
         if (forum == null)
-            return new EntityUseCaseResult(false, "Forum does not exist.", null);
+            return new EntityUseCaseResult(false, $"Forum {forumId} does not exist.", null);
 
         var resultAddModerator = forum.AddModerator(_appContext.UserId, userId, authorities.Select(x => (EAuthority)x).ToList());
 
@@ -104,7 +108,7 @@ public class ForumUseCase : IForumUseCase
     {
         var forum = _forumRepository.Get(forumId);
         if (forum == null)
-            return new EntityUseCaseResult(false, "Forum does not exist.", null);
+            return new EntityUseCaseResult(false, $"Forum {forumId} does not exist.", null);
 
         var results = new List<ForumResult>();
         foreach (var moderator in moderators)
@@ -151,7 +155,7 @@ public class ForumUseCase : IForumUseCase
     {
         var forum = _forumRepository.Get(forumId);
         if (forum == null)
-            return new EntityUseCaseResult(false, "Forum does no exist.", null);
+            return new EntityUseCaseResult(false, $"Forum {forumId} does no exist.", null);
 
         var resultList = new List<ForumResult>();
         foreach (var moderator in moderators)
@@ -200,7 +204,7 @@ public class ForumUseCase : IForumUseCase
     {
         var forum = _forumRepository.Get(forumId);
         if (forum == null)
-            return new EntityUseCaseResult(false, "Forum does no exist.", null);
+            return new EntityUseCaseResult(false, $"Forum {forumId} does no exist.", null);
 
         var resultList = new List<ForumResult>();
         foreach (var moderator in moderators)
@@ -226,6 +230,33 @@ public class ForumUseCase : IForumUseCase
             string.Join(",", resultList.Select(x => x.Result).ToList()),
             null
         );
+    }
+
+    public ModeratorAppServiceModel? GetModerator(Guid forumId, Guid moderatorId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return null;
+        
+        return forum.Moderators.FirstOrDefault(x => x.Id == moderatorId);
+    }
+
+    public ModeratorAppServiceModel? GetModeratorByUserId(Guid forumId, Guid userId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return null;
+        
+        return forum.Moderators.FirstOrDefault(x => x.UserId == userId);
+    }
+
+    public ICollection<ModeratorAppServiceModel> GetAllModerators(Guid forumId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return new List<ModeratorAppServiceModel>();
+        
+        return forum.Moderators;
     }
 
     public EntityUseCaseResult AddBlackListed(Guid forumId, Guid userId, bool canPost, bool canComment)

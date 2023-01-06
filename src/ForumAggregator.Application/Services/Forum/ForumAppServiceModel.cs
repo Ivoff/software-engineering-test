@@ -11,5 +11,5 @@ public class ForumAppServiceModel
     public string Description { get; set; } = default!;
     public bool Deleted { get; set; } = default;
     public ICollection<ModeratorAppServiceModel> Moderators { get; set; } = default!;
-    public ICollection<BlackListed> BlackList { get; set; } = default!;
+    public ICollection<BlackListedAppServiceModel> BlackList { get; set; } = default!;
 }

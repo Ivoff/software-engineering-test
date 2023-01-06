@@ -193,9 +193,79 @@ public class ForumController: ControllerBase
 
 
         if (forum == null)
-            return NotFound($"Forum {forumId} not found");
+            return NotFound($"Forum {forumId} not found.");
         
         return Ok(_mapper.Map<ReadForumResponse>(forum));
+    }
+
+    [HttpGet("forum/{forumId}/moderator/{moderatorId}")]
+    [AllowAnonymous]
+    public IActionResult ReadModerator(string forumId, string moderatorId)
+    {
+        ForumAppServiceModel? forum;
+        ModeratorAppServiceModel? moderator;
+        Guid guidForumId;
+        Guid guidModeratorId;
+        
+        if (Guid.TryParse(forumId, out guidForumId) == true && Guid.TryParse(moderatorId, out guidModeratorId) == true)
+        {
+            moderator = _forumUseCase.GetModerator(guidForumId, guidModeratorId);
+            if (moderator == null)
+                moderator = _forumUseCase.GetModeratorByUserId(guidForumId, guidModeratorId);
+        }
+        else
+        {
+            if (Guid.TryParse(moderatorId, out guidModeratorId) == false)
+                return NotFound($"Moderator {moderatorId} not found.");
+            
+            forum = _forumAppService.GetForumByName(forumId);
+            if (forum == null)
+                return NotFound($"Forum {forumId} not found.");
+
+            moderator = _forumUseCase.GetModerator(forum.Id, guidModeratorId);
+            if (moderator == null)
+                moderator = _forumUseCase.GetModeratorByUserId(guidForumId, guidModeratorId);
+        }
+
+        if (moderator == null)
+            return NotFound($"Moderator {moderatorId} not found.");
+
+        return Ok(new ReadModeratorResponse(
+            moderator.Id,
+            guidForumId,
+            moderator.UserId,
+            moderator.Authorities.Select(x => new AuthorityResponse(x.ToString(), (int) x)).ToList()
+        ));
+    }
+
+    [HttpGet("forum/{forumId}/moderator")]
+    [AllowAnonymous]
+    public IActionResult ReadAllModerators(string forumId)
+    {
+        Guid guidForumId;
+        ICollection<ModeratorAppServiceModel> moderators;
+        
+        if (Guid.TryParse(forumId, out guidForumId) == true)
+        {
+            moderators = _forumUseCase.GetAllModerators(guidForumId);
+        }
+        else
+        {
+            var forum = _forumAppService.GetForumByName(forumId);
+            if (forum == null)
+                return NotFound($"Forum {forumId} not found.");
+
+            moderators = _forumUseCase.GetAllModerators(forum.Id);
+        }
+
+        return Ok(
+            moderators.Select(x => new ReadModeratorResponse(
+                x.Id, 
+                guidForumId, 
+                x.UserId, 
+                x.Authorities.Select(y => new AuthorityResponse(y.ToString(), (int) y)).ToList()
+            )).ToList()
+        );
     }
 
     [HttpGet("forum")]
