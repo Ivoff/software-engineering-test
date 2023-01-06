@@ -18,6 +18,7 @@ public class ForumController: ControllerBase
     private readonly ForumAggregator.Application.Services.IForumService _forumAppService;
     private readonly IValidator<CreateForumRequest> _createForumRequestValidator;
     private readonly IValidator<AddModeratorRequest> _addModeratorRequestValidator;
+    private readonly IValidator<UpdateForumRequest> _updateForumRequestValidator;
     private readonly IMapper _mapper;
 
     public ForumController(
@@ -25,7 +26,8 @@ public class ForumController: ControllerBase
         IValidator<CreateForumRequest> createForumRequestValidator,
         IMapper mapper,
         ForumAggregator.Application.Services.IForumService forumAppService,
-        IValidator<AddModeratorRequest> addModeratorRequestValidator
+        IValidator<AddModeratorRequest> addModeratorRequestValidator,
+        IValidator<UpdateForumRequest> updateForumRequestValidator
     )
     {
         _forumUseCase = ForumUseCase;
@@ -33,6 +35,7 @@ public class ForumController: ControllerBase
         _mapper = mapper;
         _forumAppService = forumAppService;
         _addModeratorRequestValidator = addModeratorRequestValidator;
+        _updateForumRequestValidator = updateForumRequestValidator;
     }
 
     [HttpPost("forum")]
@@ -98,9 +101,20 @@ public class ForumController: ControllerBase
 
     [HttpPatch("forum")]
     [Authorize]
-    public IActionResult UpdateForum()
+    public IActionResult UpdateForum(UpdateForumRequest updateRequest)
     {
-        throw new NotImplementedException();
+        var validationResult = _updateForumRequestValidator.Validate(updateRequest);
+        if (validationResult.IsValid == false)
+        {
+            return BadRequest(validationResult.ToString());
+        }
+        
+        var result = _forumAppService.UpdateForum(updateRequest.forumId, updateRequest.Name, updateRequest.Description);
+
+        if (result.Value == false)
+            return UnprocessableEntity(result.Result);
+        
+        return Ok();
     }
 
     [HttpDelete("forum")]

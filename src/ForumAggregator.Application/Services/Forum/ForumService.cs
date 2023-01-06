@@ -3,16 +3,19 @@ namespace ForumAggregator.Application.Services;
 using System;
 using ForumAggregator.Domain.Shared.Interfaces;
 using AutoMapper;
+using ForumAggregator.Domain.ForumRegistry;
 
 public class ForumService : IForumService
 {
     private readonly IForumRepository _forumRepository;
     private readonly IMapper _mapper;
+    private readonly IAppContext _appContext;
 
-    public ForumService(IForumRepository forumRepository, IMapper mapper)
+    public ForumService(IForumRepository forumRepository, IMapper mapper, IAppContext appContext)
     {
         _forumRepository = forumRepository;
         _mapper = mapper;
+        _appContext = appContext;
     }
 
     public ServiceResult DeleteForum(Guid forumId)
@@ -43,8 +46,28 @@ public class ForumService : IForumService
         return _forumRepository.GetAll().Select(x => _mapper.Map<ForumAppServiceModel>(x)).ToList();
     }
 
-    public ServiceResult UpdateForum(ForumAppServiceModel forum)
+    public ServiceResult UpdateForum(Guid forumId, string newName, string newDescription)
     {
-        throw new NotImplementedException();
+        var domainForum = _forumRepository.Get(forumId);
+        if (domainForum == null)
+            return new ServiceResult(false, "Forum does not exist.");
+        
+        if (string.IsNullOrWhiteSpace(newName) == false)
+        {
+            var editResult = domainForum.EditName(_appContext.UserId, newName);
+            if (editResult.Value == false)
+                return new ServiceResult(false, editResult.Result);
+        }
+        
+        if (string.IsNullOrWhiteSpace(newDescription) == false)
+        {
+            var editResult = domainForum.EditDescription(_appContext.UserId, newDescription);
+            if (editResult.Value == false)
+                return new ServiceResult(false, editResult.Result);
+        }
+
+        var result = _forumRepository.Save(domainForum);
+
+        return new ServiceResult(result, result ? string.Empty : "Something wrong happened during data persistance");
     }
 }

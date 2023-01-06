@@ -8,6 +8,6 @@ public interface IForumService
     public ForumAppServiceModel? GetForum(Guid forumId);
     public ForumAppServiceModel? GetForumByName(string forumName);
     public ICollection<ForumAppServiceModel> GetAllForums();
-    public ServiceResult UpdateForum(ForumAppServiceModel forum);
+    public ServiceResult UpdateForum(Guid forumId, string newName, string newDescription);
     public ServiceResult DeleteForum(Guid forumId);
 }
