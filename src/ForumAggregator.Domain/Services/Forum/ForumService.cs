@@ -4,7 +4,7 @@ using System;
 using ForumAggregator.Domain.Shared.Interfaces;
 
 // This is a Domain Service because is a business rule.
-public class ForumService : IForumService
+public class ForumService : IForumService, IDomainService
 {
     private readonly IForumRepository _forumRepository;
 

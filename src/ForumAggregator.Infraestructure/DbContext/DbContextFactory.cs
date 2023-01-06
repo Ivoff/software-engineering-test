@@ -8,7 +8,7 @@ public class BloggingContextFactory : IDesignTimeDbContextFactory<DatabaseContex
     public DatabaseContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5000;Username=postgres;Password=postgres;Database=forum_aggregator");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5000;Username=postgres;Password=postgres;Database=forum_aggregator;Include Error Detail=true");
         optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         return new DatabaseContext(optionsBuilder.Options);

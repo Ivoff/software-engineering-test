@@ -70,8 +70,32 @@ public class AutoMapping : Profile
             )
             .ForMember(
                 domainModerator => domainModerator.Authorities,
-                opts => opts.MapFrom(infraModerator =>  infraModerator.ModeratorAuthorities.Select(auth => auth.Authority))
-            ).ReverseMap();
+                opts => opts.MapFrom(infraModerator =>  infraModerator.ModeratorAuthorities.Select(auth => (ForumAggregator.Domain.ForumRegistry.EAuthority) auth.Authority))
+            );
+        
+        CreateMap<ForumAggregator.Domain.ForumRegistry.Moderator, ForumAggregator.Infraestructure.Models.Moderator>()
+            .ForMember(
+                infraModerator => infraModerator.Id,
+                opts => opts.MapFrom(domainModerator => domainModerator.Id)
+            )
+            .ForMember(
+                infraModerator => infraModerator.UserId,
+                opts => opts.MapFrom(domainModerator => domainModerator.UserId)
+            )
+            .ForMember(
+                infraModerator => infraModerator.Deleted,
+                opts => opts.MapFrom(domainModerator => domainModerator.Deleted)
+            )
+            .ForMember(
+                infraModerator => infraModerator.ModeratorAuthorities,
+                opts => opts.MapFrom(
+                    domainModerator =>  domainModerator.Authorities
+                        .Select(auth => new ForumAggregator.Infraestructure.Models.ModeratorAuthority(){
+                                ModeratorId = domainModerator.Id,
+                                Authority = auth
+                            }
+                        ).ToList()
+                    ));
         
         CreateMap<ForumAggregator.Infraestructure.Models.BlackListed, ForumAggregator.Domain.ForumRegistry.BlackListed>().ReverseMap();
 
@@ -96,6 +120,38 @@ public class AutoMapping : Profile
                 domainForum => domainForum.Deleted,
                 opts => opts.MapFrom(appServiceForum => appServiceForum.Deleted)
             ).ReverseMap();
+        
+        // CreateMap<ForumAggregator.Domain.ForumRegistry.Forum, ForumAggregator.Application.Services.ForumAppServiceModel>()
+        //     .ForMember(
+        //         appServiceForum => appServiceForum.Id,
+        //         opts => opts.MapFrom(domainForum => domainForum.Id)
+        //     )
+        //     .ForMember(
+        //         appServiceForum => appServiceForum.OwnerId,
+        //         opts => opts.MapFrom(domainForum => domainForum.OwnerId)
+        //     )
+        //     .ForMember(
+        //         appServiceForum => appServiceForum.Name,
+        //         opts => opts.MapFrom(domainForum => domainForum.Name)
+        //     )
+        //     .ForMember(
+        //         appServiceForum => appServiceForum.Description,
+        //         opts => opts.MapFrom(domainForum => domainForum.Description)
+        //     )
+        //     .ForMember(
+        //         appServiceForum => appServiceForum.Deleted,
+        //         opts => opts.MapFrom(domainForum => domainForum.Deleted)
+        //     )
+        //     .ForMember(
+        //         appServiceforum => appServiceforum.Moderators,
+        //         opts => opts.MapFrom(domainForum => domainForum.ModeratorCollection.Moderators.Select(
+        //                 x => new ForumAggregator.Application.Services.ModeratorAppServiceModel(){
+        //                     Id = domainForum.Id,
+        //                     OwnerId = domainForum.OwnerId,
 
+        //                 }
+        //             )
+        //         )
+        //     )
     }
 }

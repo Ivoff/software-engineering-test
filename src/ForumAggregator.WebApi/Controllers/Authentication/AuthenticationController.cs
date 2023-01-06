@@ -61,7 +61,12 @@ public class AuthenticationController: ControllerBase
         }
 
         var registrationResult = result.EntityUseCaseDto!;
-        _authenticationService.GenerateCookie(registrationResult.Id, registrationResult.Name);
+
+        // If User is already authenticated and is registering another user, do not give him the cookie
+        if (HttpContext.User.Identity?.IsAuthenticated == false)
+        {
+            _authenticationService.GenerateCookie(registrationResult.Id, registrationResult.Name);
+        }
 
         return Ok(new AuthenticationResponse(registrationResult.Id, registrationResult.Name));
     }

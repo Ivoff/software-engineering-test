@@ -196,15 +196,36 @@ public class Forum : IEntity, IAggregateRoot
                 };
             }
 
+            if (ModeratorCollection.GetModeratorByUserId(newModeratorUserId) != null)
+            {
+                return new ForumResult(){
+                    Value = false,
+                    Result = "User is already a Moderator."
+                };
+            }
+
             bool hasNecessaryAuthorities = true;
+            bool isValidAuthority = true;
             foreach(var authority in authorities)
+            {
                 hasNecessaryAuthorities = hasNecessaryAuthorities && mod.CheckForAuthority(authority);
+                isValidAuthority = isValidAuthority && Enum.IsDefined(typeof(EAuthority), authority);
+            }
             
             if (hasNecessaryAuthorities == false)
             {
                 return new ForumResult(){
                     Value = false,
-                    Result = "Actor user has to possess all Authorities that are being given."
+                    Result = "Actor User has to possess all Authorities that are being given."
+                };
+            
+            }
+
+            if (isValidAuthority == false)
+            {
+                return new ForumResult(){
+                    Value = false,
+                    Result = "At least one authority provided is invalid."
                 };
             }
 
@@ -213,7 +234,7 @@ public class Forum : IEntity, IAggregateRoot
             return new ForumResult()
             {
                 Value = true,
-                Result = string.Empty
+                Result = newModerator.Id.ToString()
             };
         }
         

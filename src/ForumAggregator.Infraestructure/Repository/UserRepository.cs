@@ -75,7 +75,7 @@ public class UserRepository: IUserRepository
 
         if (_dbContext.Users.Where(user => user.Id == newUser.Id).Count() == 0)
         {
-            _dbContext.Add(newUser);
+            _dbContext.Users.Add(newUser);
         }
         else 
         {
@@ -87,7 +87,7 @@ public class UserRepository: IUserRepository
             currUser.Salt = newUser.Salt;
             currUser.Deleted = newUser.Deleted;            
 
-            _dbContext.Update(currUser);
+            _dbContext.Users.Update(currUser);
         }
 
         return _dbContext.SaveChanges() > 0;

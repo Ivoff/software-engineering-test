@@ -53,8 +53,7 @@ public class ForumRepository: IForumRepository
             .Include(forum => forum.BlackList)
             .Include(forum => forum.Moderators)
             .ThenInclude(moderator => moderator.ModeratorAuthorities)
-            .Where(forum => forum.Name == forumName)
-            .FirstOrDefault();
+            .FirstOrDefault(forum => forum.Name == forumName);
 
         if (forum == null)
             return null;
@@ -92,44 +91,106 @@ public class ForumRepository: IForumRepository
                 ICollection<Domain.ForumRegistry.BlackListed>, ICollection<Infraestructure.Models.BlackListed>
             >(forum.BlackListedCollection.BlackList).ToList();
 
-            _dbContext.Add(newForum);
+            _dbContext.Forums.Add(newForum);
         }
         else
         {
             forumExist.Name = forum.Name;
             forumExist.Description = forum.Description;
             forumExist.Deleted = forum.Deleted;
-            
-            forumExist.Moderators = _mapper.Map<
-                ICollection<Domain.ForumRegistry.Moderator>, ICollection<Infraestructure.Models.Moderator>
-            >(forum.ModeratorCollection.Moderators).ToList();
 
-            forumExist.BlackList = _mapper.Map<
-                ICollection<Domain.ForumRegistry.BlackListed>, ICollection<Infraestructure.Models.BlackListed>
-            >(forum.BlackListedCollection.BlackList).ToList();
-
-            _dbContext.Update(forumExist);
+            _dbContext.Forums.Update(forumExist);
         }
 
         return _dbContext.SaveChanges() > 0;
     }
 
-    private void PrintForum(Domain.ForumRegistry.Forum forum)
+    public bool SaveModerator(Guid forumId, Domain.ForumRegistry.Moderator moderator)
     {
-        string forumString = $"{forum.Id}\n{forum.OwnerId}\n{forum.Name}\n{forum.Description}\n{forum.Deleted}\n";
+        _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+        
+        var trackedModerator = _dbContext.Moderators.Include(x => x.ModeratorAuthorities).FirstOrDefault(x => x.Id == moderator.Id);
+        
+        if (trackedModerator == null)
+        {
+            var newModerator = _mapper.Map<Models.Moderator>(moderator);
+            newModerator.ForumId = forumId;
+            _dbContext.Moderators.Add(newModerator);
+        }
+        else
+        {
+            ICollection<Domain.ForumRegistry.EAuthority> authorities = moderator.Authorities.ToList();
+            trackedModerator.ModeratorAuthorities.Select(x => {
+                var result = authorities.FirstOrDefault(auth => auth == x.Authority);
+                if (result != default)
+                {
+                    authorities.Remove(result);
+                }
+                return x;
+            });
+            
+            foreach(var auth in authorities)
+            {
+                trackedModerator.ModeratorAuthorities.Add(
+                    new Models.ModeratorAuthority(){
+                        ModeratorId = moderator.Id,
+                        Authority = auth
+                    }
+                );
+            }
+        }
+        
+        var result = _dbContext.SaveChanges();
+        
+        _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+        return result > 0;
+    }
+
+    public ICollection<Domain.ForumRegistry.Forum> GetAll()
+    {
+        return _dbContext.Forums.Select(x => _mapper.Map<Domain.ForumRegistry.Forum>(x)).ToList();
+    }
+
+    private string PrintForum(Domain.ForumRegistry.Forum forum)
+    {
+        string forumString = $"Forum Id: {forum.Id}\nForum OwnerId: {forum.OwnerId}\nForum Name: {forum.Name}\nForum Description: {forum.Description}\nDeleted: {forum.Deleted}\n";
         foreach(var moderator in forum.ModeratorCollection.Moderators)
         {
-            forumString += $"\t{moderator.Id}\n\t{moderator.UserId}\n";
+            forumString += $"\tModerator Id: {moderator.Id}\n\tModerator UserId: {moderator.UserId}\n";
             foreach(var authority in moderator.Authorities)
             {
-                forumString += $"\t\t{authority.ToString()}\n";
+                forumString += $"\t\tAuthority: {authority.ToString()}\n";
             }
         }
         foreach(var blackListed in forum.BlackListedCollection.BlackList)
         {
-            forumString += $"\t{blackListed.Id}\n\t{blackListed.UserId}\n\t{blackListed.CanComment}\n\t{blackListed.CanPost}\n";
+            forumString += $"\tBlackListed Id: {blackListed.Id}\n\tBlackListed UserId: {blackListed.UserId}\n\tBlackListed CanComment: {blackListed.CanComment}\n\tBlackListed CanPost: {blackListed.CanPost}\n";
         }
         
         Console.WriteLine(forumString);
+
+        return forumString;
+    }
+
+    private string PrintForum(Infraestructure.Models.Forum forum)
+    {
+        string forumString = $"Forum Id: {forum.Id}\nForum OwnerId: {forum.OwnerId}\nForum Name: {forum.Name}\nForum Description: {forum.Description}\nDeleted: {forum.Deleted}\n";
+        foreach(var moderator in forum.Moderators)
+        {
+            forumString += $"\tModerator Id: {moderator.Id}\n\tModerator UserId: {moderator.UserId}\n";
+            foreach(var authority in moderator.ModeratorAuthorities)
+            {
+                forumString += $"\t\tAuthority: {authority.Authority.ToString()}\n";
+            }
+        }
+        // foreach(var blackListed in forum.BlackList)
+        // {
+            // forumString += $"\tBlackListed Id: {blackListed.Id}\n\tBlackListed UserId: {blackListed.UserId}\n\tBlackListed CanComment: {blackListed.CanComment}\n\tBlackListed CanPost: {blackListed.CanPost}\n";
+        // }
+        
+        Console.WriteLine(forumString);
+
+        return forumString;
     }
 }

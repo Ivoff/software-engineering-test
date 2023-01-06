@@ -2,20 +2,18 @@ namespace ForumAggregator.Application.Services;
 
 using System;
 using ForumAggregator.Domain.Shared.Interfaces;
+using AutoMapper;
 
 public class ForumService : IForumService
 {
     private readonly IForumRepository _forumRepository;
+    private readonly IMapper _mapper;
 
-    public ForumService(IForumRepository forumRepository)
+    public ForumService(IForumRepository forumRepository, IMapper mapper)
     {
         _forumRepository = forumRepository;
+        _mapper = mapper;
     }
-
-    // public ServiceResult CreateForum(ForumAppServiceModel forum)
-    // {
-    //     throw new NotImplementedException();
-    // }
 
     public ServiceResult DeleteForum(Guid forumId)
     {
@@ -24,12 +22,25 @@ public class ForumService : IForumService
 
     public ForumAppServiceModel? GetForum(Guid forumId)
     {
-        throw new NotImplementedException();
+        var forum = _forumRepository.Get(forumId);
+        if (forum == null)
+            return null;
+        
+        return _mapper.Map<ForumAppServiceModel>(forum);
     }
 
     public ForumAppServiceModel? GetForumByName(string forumName)
     {
-        throw new NotImplementedException();
+        var forum = _forumRepository.GetByName(forumName);
+        if (forum == null)
+            return null;
+        
+        return _mapper.Map<ForumAppServiceModel>(forum);
+    }
+
+    public ICollection<ForumAppServiceModel> GetAllForums()
+    {
+        return _forumRepository.GetAll().Select(x => _mapper.Map<ForumAppServiceModel>(x)).ToList();
     }
 
     public ServiceResult UpdateForum(ForumAppServiceModel forum)

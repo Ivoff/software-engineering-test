@@ -6,7 +6,7 @@ using ForumAggregator.Domain.ForumRegistry;
 using ForumAggregator.Domain.PostRegistry;
 using ForumAggregator.Domain.Shared.Interfaces;
 
-public class ForumContentModerationService: IForumContentModerationService
+public class ForumContentModerationService: IForumContentModerationService, IDomainService
 {
     public ForumContentModerationResult RemovePost(in Post post, in Forum forum, Guid actorUserId)
     {
