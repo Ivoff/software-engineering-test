@@ -18,6 +18,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IForumUseCase, ForumUseCase>();
         services.AddScoped<IPostUseCase, PostUseCase>();
+        services.AddScoped<IPostService, PostService>();
         services.AddScoped<Application.Services.IForumService, Application.Services.ForumService>();
         
         services.AddScoped<IAppContext, AppContext>();

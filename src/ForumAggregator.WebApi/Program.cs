@@ -4,6 +4,7 @@ using ForumAggregator.Infraestructure.DbContext;
 using ForumAggregator.WebApi.Controllers.Authentication;
 using ForumAggregator.WebApi.Controllers.User;
 using ForumAggregator.WebApi.Controllers.Forum;
+using ForumAggregator.WebApi.Controllers.Post;
 using ForumAggregator.Domain.DependencyInjection;
 
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,8 @@ builder.Services.AddScoped<IValidator<CreateForumRequest>, CreateForumRequestVal
 builder.Services.AddScoped<IValidator<ModeratorRequest>, ModeratorRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateForumRequest>, UpdateForumRequestValidator>();
 builder.Services.AddScoped<IValidator<BlackListedRequest>, BlackListedRequestValidator>();
+builder.Services.AddScoped<IValidator<AddPostRequest>, AddPostRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdatePostRequest>, UpdatePostRequestValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

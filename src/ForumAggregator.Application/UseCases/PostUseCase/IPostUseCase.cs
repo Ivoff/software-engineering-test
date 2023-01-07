@@ -4,5 +4,5 @@ using System;
 
 public interface IPostUseCase
 {
-    public EntityUseCaseResult Create(string title, string content, Guid userId);
+    public EntityUseCaseResult Create(Guid forumId, Guid authorUserId, string title, string content);
 }

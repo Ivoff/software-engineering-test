@@ -20,9 +20,20 @@ public class PostRepository : IPostRepository
         _mapper = mapper;
     }
 
-    public ForumAggregator.Domain.PostRegistry.Post Get(Guid postId)
+    public ForumAggregator.Domain.PostRegistry.Post? Get(Guid postId)
     {
-        throw new NotImplementedException();
+        var post = _dbContext.Posts.FirstOrDefault(x => x.Id == postId);
+        if (post == null)
+            return null;
+        
+        // For some reason AutoMapper is not mapping AuthorId to new PostAuthor(AuthorId, false)
+        // Therefore, this here, do not work.
+        // return _mapper.Map<ForumAggregator.Domain.PostRegistry.Post>(post);
+        
+        return ForumAggregator.Domain.PostRegistry.Post.Load(
+            post.Id, post.ForumId, post.Title, post.Content, post.Deleted,
+            new ForumAggregator.Domain.PostRegistry.PostAuthor(post.AuthorId, false)
+        );
     }
 
     public ICollection<ForumAggregator.Domain.PostRegistry.Post> GetAllFromForum(Guid forumId)

@@ -15,7 +15,7 @@ public class Post : IEntity
 
     public string Content { get; private set; } = default!;
 
-    public PostAuthor Author { get; init; } = default!;
+    public PostAuthor Author { get; private set; } = default!;
 
     public bool Deleted { get; private set; } = default!;
 
@@ -108,7 +108,7 @@ public class Post : IEntity
         };
     }
 
-    public PostResult Create (Guid forumId, string title, string content, PostAuthor author)
+    static public PostResult Create (Guid forumId, string title, string content, PostAuthor author)
     {
         Post newPost = new Post(forumId, title, content, author);
         bool resultValue = !author.CannotPost;

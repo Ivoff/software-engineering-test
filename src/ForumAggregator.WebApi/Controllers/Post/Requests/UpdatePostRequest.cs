@@ -2,8 +2,8 @@ namespace ForumAggregator.WebApi.Controllers.Post;
 
 using System;
 
-public record PostRequest(
-    Guid ForumId,
+public record UpdatePostRequest(
+    Guid PostId,
     string Title,
     string Content
 );
