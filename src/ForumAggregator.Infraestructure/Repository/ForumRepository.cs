@@ -107,7 +107,9 @@ public class ForumRepository : IForumRepository
 
     public bool SaveModerator(Guid forumId, Domain.ForumRegistry.Moderator moderator)
     {
-        var trackedModerator = _dbContext.Moderators.Include(x => x.ModeratorAuthorities).FirstOrDefault(x => x.Id == moderator.Id);
+        var trackedModerator = _dbContext.Moderators
+            .Include(x => x.ModeratorAuthorities)
+            .FirstOrDefault(x => x.Id == moderator.Id);
 
         if (trackedModerator == null)
         {
@@ -143,6 +145,30 @@ public class ForumRepository : IForumRepository
                     );
                 }
             }
+        }
+
+        return _dbContext.SaveChanges() > 0;
+    }
+
+    public bool SaveBlackListed(Guid forumId, Domain.ForumRegistry.BlackListed blackListed)
+    {
+        var trackedBlackListed = _dbContext.BlackList
+            .FirstOrDefault(x => x.Id == blackListed.Id);
+        
+        if (trackedBlackListed == null)
+        {
+            var newBlackListed = _mapper.Map<Models.BlackListed>(blackListed);
+            newBlackListed.ForumId = forumId;
+            
+            _dbContext.BlackList.Add(newBlackListed);
+        }
+        else
+        {
+            trackedBlackListed.CanComment = blackListed.CanComment;
+            trackedBlackListed.CanPost = blackListed.CanPost;
+            trackedBlackListed.Deleted = blackListed.Deleted;
+
+            _dbContext.BlackList.Update(trackedBlackListed);
         }
 
         return _dbContext.SaveChanges() > 0;

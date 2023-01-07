@@ -115,7 +115,7 @@ public class Post : IEntity
         return new PostResult()
         {
             Value = resultValue,
-            Result = resultValue ? "Post successfully created" : "Post has been blocked from being created",
+            Result = resultValue ? "Post successfully created" : "Author in the Blacklist, Post has been blocked from being created.",
             Post = resultValue ? newPost : null
         };
     }

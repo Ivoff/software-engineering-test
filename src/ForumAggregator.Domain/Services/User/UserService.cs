@@ -5,7 +5,7 @@ using ForumAggregator.Domain.Shared.Interfaces;
 using UserRegistry;
 
 // This is a Domain Service because is a business rule.
-public class UserService : IUserService, IDomainService
+public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
 

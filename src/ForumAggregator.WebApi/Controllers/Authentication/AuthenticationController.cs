@@ -15,7 +15,7 @@ public class AuthenticationController: ControllerBase
 {
     private readonly IUserAuthenticationUseCase _userAuthenticationUseCase;    
     private readonly Application.Services.IAuthenticationService _authenticationService;
-    private readonly IUserService _user_service;
+    private readonly IUserService _userService;
     private readonly ILogger<AuthenticationController> _logger;
     private readonly IValidator<RegisterRequest> _registerRequestValidator;
     private readonly IValidator<LoginRequest> _loginRequestValidator;
@@ -31,7 +31,7 @@ public class AuthenticationController: ControllerBase
     {
         _userAuthenticationUseCase = userAuthenticationUseCase;
         _authenticationService = authenticationService;
-        _user_service = user_service;
+        _userService = user_service;
         _loginRequestValidator = loginRequestValidator;
         _registerRequestValidator = registerRequestValidator;
         _logger = logger;
@@ -62,7 +62,7 @@ public class AuthenticationController: ControllerBase
 
         var registrationResult = result.EntityUseCaseDto!;
 
-        // If User is already authenticated and is registering another user, do not give him the cookie
+        // If User is already authenticated and is registering another user, do not give him a cookie
         if (HttpContext.User.Identity?.IsAuthenticated == false)
         {
             _authenticationService.GenerateCookie(registrationResult.Id, registrationResult.Name);
@@ -87,7 +87,8 @@ public class AuthenticationController: ControllerBase
         {
             _logger.LogInformation("Already Logged in");
 
-            UserAppServiceModel user = _user_service.GetUser(loginRequest.Email) ?? new UserAppServiceModel();
+            UserAppServiceModel user = _userService.GetUser(loginRequest.Email) ?? new UserAppServiceModel();            
+            _authenticationService.GenerateCookie(user.Id, user.Name);
             return Ok(new AuthenticationResponse(user.Id, user.Name));
         }
 

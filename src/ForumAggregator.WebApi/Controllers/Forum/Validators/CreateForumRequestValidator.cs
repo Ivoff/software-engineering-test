@@ -21,10 +21,26 @@ public class CreateForumRequestValidator : AbstractValidator<CreateForumRequest>
         RuleForEach(x => x.BlackList).ChildRules(
             blackListed => {
                 blackListed.RuleFor(y => y.UserId).NotEmpty();
+                
                 blackListed.RuleFor(y => y.CanComment)
                     .NotEqual(true)
-                    .When(y => y.CanPost == true)
-                    .WithMessage("Unecessary addition to BlackList when no restriction is imposed");
+                    .When(y => y.CanPost == true && y.CanComment != null && y.CanPost != null)
+                    .WithMessage("Unecessary addition to BlackList when no restriction is imposed.");
+                
+                blackListed.RuleFor(y => y.CanComment)
+                    .NotNull()
+                    .When(y => y.CanPost == null)
+                    .WithMessage("Unecessary addition to BlackList when no restriction is imposed.");
+                
+                // blackListed.RuleFor(y => y.CanPost)
+                //     .NotEqual(true)
+                //     .When(y => y.CanPost == true && y.CanPost != null && y.CanComment != null)
+                //     .WithMessage("Unecessary addition to BlackList when no restriction is imposed.");
+                
+                // blackListed.RuleFor(y => y.CanPost)
+                //     .NotNull()
+                //     .When(y => y.CanComment == null)
+                //     .WithMessage("Unecessary addition to BlackList when no restriction is imposed.");
             }
         ).When(x => x.BlackList != null && x.BlackList.Count() > 0);
     }

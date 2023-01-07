@@ -375,6 +375,9 @@ public class Forum : IEntity, IAggregateRoot
     {
         if (Deleted)
             return DeletedResult();
+        
+        if (canComment == true && canPost == true)
+            return new ForumResult() { Value = false, Result = "Unecessary addition to the BlackList if User can Comnent and Post." };
 
         Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
         if (aux != null)
@@ -385,27 +388,31 @@ public class Forum : IEntity, IAggregateRoot
 
             Moderator mod = aux!;
             bool successful = false;
+            BlackListed? newBlackListed = null;
 
             if (canComment != null && canPost != null && mod.CheckForAuthority(EAuthority.BlockFromComment) && mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
-                BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, (bool) canPost));
+                newBlackListed = new BlackListed(blackListedUserId, (bool) canComment, (bool) canPost);
+                BlackListedCollection.Add(newBlackListed);
                 successful = true;
             }                
             else if (canComment != null && canPost == null && mod.CheckForAuthority(EAuthority.BlockFromComment))
             {
-                BlackListedCollection.Add(new BlackListed(blackListedUserId, (bool) canComment, true));
+                newBlackListed = new BlackListed(blackListedUserId, (bool) canComment, true);
+                BlackListedCollection.Add(newBlackListed);
                 successful = true;
             }                
             else if (canPost != null && canComment == null && mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
-                BlackListedCollection.Add(new BlackListed(blackListedUserId, true, (bool) canPost));
+                newBlackListed = new BlackListed(blackListedUserId, true, (bool) canPost);
+                BlackListedCollection.Add(newBlackListed);
                 successful = true;
             }                
 
             return new ForumResult()
             {
                 Value = successful,
-                Result = successful ? string.Empty : "Actor User does not have the Authority to proceed with the actions."
+                Result = successful ? newBlackListed!.Id.ToString() : "Actor User does not have the Authority to proceed with the actions."
             };
         }
 
@@ -431,13 +438,16 @@ public class Forum : IEntity, IAggregateRoot
             BlackListed blackListedUser = (BlackListed) blackListedUserExist;
             Moderator mod = aux!;
 
+            // if (canComment == true && blackListedUser.CanPost == true)
+            //     return new ForumResult () { Value = false, Result = "User cannot have both restrictions lifted and still be BlackListed." };
+
             if (mod.CheckForAuthority(EAuthority.BlockFromComment))
             {
                 IDomainResult<bool> result = BlackListedCollection.Update(blackListedUserId, canComment, blackListedUser.CanPost);
                 return new ForumResult()
                 {
                     Value = result.Value,
-                    Result = result.Result
+                    Result = result.Value ? blackListedUser.Id.ToString() : result.Result
                 };
             }
 
@@ -470,13 +480,16 @@ public class Forum : IEntity, IAggregateRoot
             BlackListed blackListedUser = (BlackListed) blackListedUserExist;
             Moderator mod = aux!;
 
+            // if (canPost == true && blackListedUser.CanComment == true)
+            //     return new ForumResult () { Value = false, Result = "User cannot have both restrictions lifted and still be BlackListed." };
+
             if (mod.CheckForAuthority(EAuthority.BlockFromPost))
             {
                 IDomainResult<bool> result = BlackListedCollection.Update(blackListedUserId, canPost, blackListedUser.CanComment);
                 return new ForumResult()
                 {
                     Value = result.Value,
-                    Result = result.Result
+                    Result = result.Value ? blackListedUser.Id.ToString() : result.Result
                 };
             }
 
@@ -484,6 +497,53 @@ public class Forum : IEntity, IAggregateRoot
             {
                 Value = false,
                 Result = "Actor User has no Authority to block other Users from comment."
+            };
+        }
+
+        return new ForumResult()
+        {
+            Value = false,
+            Result = "Actor User is not a Moderator."
+        };
+    }
+
+    public ForumResult UpdateBlackListed(Guid actorUserId, Guid blackListedUserId, bool? canPost, bool? canComment)
+    {
+        if (Deleted)
+            return DeletedResult();
+
+        Moderator? aux = ModeratorCollection.GetModeratorByUserId(actorUserId);
+        if (aux != null)
+        {
+            BlackListed? blackListedUserExist = BlackListedCollection.GetByUserId(blackListedUserId);
+            if (blackListedUserExist == null)
+                return new ForumResult () { Value = false, Result = "User to be updated is not BlackListed." };
+            
+            BlackListed blackListedUser = (BlackListed) blackListedUserExist;
+            Moderator mod = aux!;
+
+            if (canComment == true && canPost == true)
+                return new ForumResult () { Value = false, Result = "User cannot have both restrictions lifted and still be BlackListed." };
+
+            if (canPost == null && canComment == null)
+                return new ForumResult () { Value = false, Result = "Empty uptdate." };
+
+            if (canPost != null && mod.CheckForAuthority(EAuthority.BlockFromPost) == false)
+                return new ForumResult() { Value = false, Result = "Actor User has no Authority to block other Users from post." };
+
+            if (canComment != null && mod.CheckForAuthority(EAuthority.BlockFromComment) == false)
+                return new ForumResult() { Value = false, Result = "Actor User has no Authority to block other Users from Comment." };
+
+            IDomainResult<bool> result = BlackListedCollection.Update(
+                blackListedUserId, 
+                canComment ?? blackListedUser.CanComment, 
+                canPost ?? blackListedUser.CanPost
+            );
+            
+            return new ForumResult()
+            {
+                Value = result.Value,
+                Result = result.Value ? blackListedUser.Id.ToString() : result.Result
             };
         }
 

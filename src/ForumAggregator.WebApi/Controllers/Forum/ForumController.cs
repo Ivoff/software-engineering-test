@@ -19,6 +19,7 @@ public class ForumController: ControllerBase
     private readonly IValidator<CreateForumRequest> _createForumRequestValidator;
     private readonly IValidator<ModeratorRequest> _moderatorRequestValidator;
     private readonly IValidator<UpdateForumRequest> _updateForumRequestValidator;
+    private readonly IValidator<BlackListedRequest> _blackListedRequestValidator;
     private readonly IMapper _mapper;
 
     public ForumController(
@@ -27,7 +28,8 @@ public class ForumController: ControllerBase
         IMapper mapper,
         ForumAggregator.Application.Services.IForumService forumAppService,
         IValidator<ModeratorRequest> addModeratorRequestValidator,
-        IValidator<UpdateForumRequest> updateForumRequestValidator
+        IValidator<UpdateForumRequest> updateForumRequestValidator,
+        IValidator<BlackListedRequest> blackListedRequestValidator
     )
     {
         _forumUseCase = ForumUseCase;
@@ -36,6 +38,7 @@ public class ForumController: ControllerBase
         _forumAppService = forumAppService;
         _moderatorRequestValidator = addModeratorRequestValidator;
         _updateForumRequestValidator = updateForumRequestValidator;
+        _blackListedRequestValidator = blackListedRequestValidator;
     }
 
     [HttpPost("forum")]
@@ -102,6 +105,28 @@ public class ForumController: ControllerBase
         return Ok(moderatorsId);
     }
 
+    [HttpPost("forum/blacklisted")]
+    [Authorize]
+    public IActionResult AddBlackListed(BlackListedRequest addBlackListedRequest)
+    {
+        var validationResult = _blackListedRequestValidator.Validate(addBlackListedRequest);
+        if (validationResult.IsValid == false)
+            return BadRequest(validationResult.ToString());
+        
+        var result = _forumUseCase.AddBlackListed(
+            addBlackListedRequest.forumId,
+            _mapper.Map<
+                ICollection<Controllers.Forum.BlackListed>, 
+                ICollection<Application.UseCases.BlackListedUseCaseModel>
+            >(addBlackListedRequest.blackListedUsers)
+        );
+
+        if (result.Value == false)
+            return UnprocessableEntity(result.Result);
+        
+        return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
+    }
+
     [HttpPatch("forum")]
     [Authorize]
     public IActionResult UpdateForum(UpdateForumRequest updateRequest)
@@ -146,6 +171,28 @@ public class ForumController: ControllerBase
         return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
     }
 
+    [HttpPatch("forum/blacklisted")]
+    [Authorize]
+    public IActionResult UpdateBlackListed(BlackListedRequest updateBlackListedRequest)
+    {
+        var validationResult = _blackListedRequestValidator.Validate(updateBlackListedRequest);
+        if (validationResult.IsValid == false)
+            return BadRequest(validationResult.ToString());
+
+        var result = _forumUseCase.UpdateBlackListed(
+            updateBlackListedRequest.forumId, 
+            _mapper.Map<
+                ICollection<Controllers.Forum.BlackListed>, 
+                ICollection<Application.UseCases.BlackListedUseCaseModel>
+            >(updateBlackListedRequest.blackListedUsers)
+        );
+
+        if (result.Value == false)
+            return UnprocessableEntity(result.Result);
+        
+        return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
+    }
+
     [HttpDelete("forum")]
     [Authorize]
     public IActionResult DeleteForum()
@@ -177,6 +224,11 @@ public class ForumController: ControllerBase
         }
 
         return Ok(result.Result.Split(",").Select(x => Guid.Parse(x)).ToList());
+    }
+
+    public IActionResult DeleteBlackListed(BlackListedRequest deleteBlackListedRequest)
+    {
+        throw new NotImplementedException();
     }
 
     [HttpGet("forum/{forumId}")]

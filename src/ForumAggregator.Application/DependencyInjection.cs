@@ -17,7 +17,9 @@ public static class ServiceCollectionExtension
         services.AddScoped<IUserAuthenticationUseCase, UserAuthenticationUserCase>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IForumUseCase, ForumUseCase>();
+        services.AddScoped<IPostUseCase, PostUseCase>();
         services.AddScoped<Application.Services.IForumService, Application.Services.ForumService>();
+        
         services.AddScoped<IAppContext, AppContext>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

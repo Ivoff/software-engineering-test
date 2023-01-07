@@ -32,6 +32,7 @@ builder.Services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserRequestValid
 builder.Services.AddScoped<IValidator<CreateForumRequest>, CreateForumRequestValidator>();
 builder.Services.AddScoped<IValidator<ModeratorRequest>, ModeratorRequestValidator>();
 builder.Services.AddScoped<IValidator<UpdateForumRequest>, UpdateForumRequestValidator>();
+builder.Services.AddScoped<IValidator<BlackListedRequest>, BlackListedRequestValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

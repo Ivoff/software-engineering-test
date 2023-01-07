@@ -264,6 +264,38 @@ public class ForumUseCase : IForumUseCase
         throw new NotImplementedException();
     }
 
+    public EntityUseCaseResult AddBlackListed(Guid forumId, ICollection<BlackListedUseCaseModel> blackListedUsers)
+    {
+        var forum = _forumRepository.Get(forumId);
+        if (forum == null)
+            return new EntityUseCaseResult(false, $"Forum {forumId} does not exist.", null);
+        
+        var results = new List<ForumResult>();
+        foreach(var blackListed in blackListedUsers)
+        {
+            var resultAdd = forum.AddBlackListed(
+                _appContext.UserId, 
+                blackListed.UserId, 
+                blackListed.CanComment, 
+                blackListed.CanPost
+            );
+
+            if (resultAdd.Value == false)
+                return new EntityUseCaseResult(false, resultAdd.Result, null);
+            
+            results.Add(resultAdd);
+
+            if (_forumRepository.SaveBlackListed(forumId, forum.GetBlackListedByUserId(blackListed.UserId)!) == false)
+                return new EntityUseCaseResult(false, "Something wrong happened during data persistance", null);
+        }
+
+        return new EntityUseCaseResult(
+            true, 
+            string.Join(",", results.Select(x => x.Result).ToList()),
+            null
+        );
+    }
+
     public EntityUseCaseResult RemoveBlackListed(Guid forumId, Guid userId)
     {
         throw new NotImplementedException();
@@ -272,5 +304,35 @@ public class ForumUseCase : IForumUseCase
     public EntityUseCaseResult UpdateBlackListed(Guid forumId, Guid userId, bool? canPost, bool? canComment)
     {
         throw new NotImplementedException();
+    }
+
+    public EntityUseCaseResult UpdateBlackListed(Guid forumId, ICollection<BlackListedUseCaseModel> blackListedUsers)
+    {
+        var forum = _forumRepository.Get(forumId);
+        if (forum == null)
+            return new EntityUseCaseResult(false, $"Forum {forumId} does not exist.", null);
+        
+        var results = new List<ForumResult>();
+        foreach(var blackListed in blackListedUsers)
+        {
+            var result = forum.UpdateBlackListed(
+                _appContext.UserId, 
+                blackListed.UserId, 
+                blackListed.CanPost, 
+                blackListed.CanComment
+            );
+
+            // There is no way to rollback this the way it is.
+            if (_forumRepository.SaveBlackListed(forumId, forum.GetBlackListedByUserId(blackListed.UserId)!) == false)
+                return new EntityUseCaseResult(false, "Something wrong happened during data persistance", null);
+
+            results.Add(result);
+        }
+
+        return new EntityUseCaseResult(
+            true, 
+            string.Join(",", results.Select(x => x.Result).ToList()),
+            null
+        );
     }
 }

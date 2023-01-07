@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public record BlackListed(
     Guid UserId,
-    bool CanComment,
-    bool CanPost
+    bool? CanComment,
+    bool? CanPost
 );
 
 public record Moderator(

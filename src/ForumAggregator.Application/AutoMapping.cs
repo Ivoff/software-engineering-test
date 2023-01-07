@@ -167,37 +167,30 @@ public class AutoMapping : Profile
                 ))
             ).AfterMap((src, dst) => dst.BlackList.Select(x => {x.ForumId = src.Id; return x;}));
         
-        // CreateMap<ForumAggregator.Domain.ForumRegistry.Forum, ForumAggregator.Application.Services.ForumAppServiceModel>()
-        //     .ForMember(
-        //         appServiceForum => appServiceForum.Id,
-        //         opts => opts.MapFrom(domainForum => domainForum.Id)
-        //     )
-        //     .ForMember(
-        //         appServiceForum => appServiceForum.OwnerId,
-        //         opts => opts.MapFrom(domainForum => domainForum.OwnerId)
-        //     )
-        //     .ForMember(
-        //         appServiceForum => appServiceForum.Name,
-        //         opts => opts.MapFrom(domainForum => domainForum.Name)
-        //     )
-        //     .ForMember(
-        //         appServiceForum => appServiceForum.Description,
-        //         opts => opts.MapFrom(domainForum => domainForum.Description)
-        //     )
-        //     .ForMember(
-        //         appServiceForum => appServiceForum.Deleted,
-        //         opts => opts.MapFrom(domainForum => domainForum.Deleted)
-        //     )
-        //     .ForMember(
-        //         appServiceforum => appServiceforum.Moderators,
-        //         opts => opts.MapFrom(domainForum => domainForum.ModeratorCollection.Moderators.Select(
-        //                 x => new ForumAggregator.Application.Services.ModeratorAppServiceModel(){
-        //                     Id = domainForum.Id,
-        //                     OwnerId = domainForum.OwnerId,
-
-        //                 }
-        //             )
-        //         )
-        //     )
+        CreateMap<ForumAggregator.Domain.PostRegistry.Post, ForumAggregator.Infraestructure.Models.Post>()
+            .ForMember(
+                infraPost => infraPost.Id,
+                opts => opts.MapFrom(domainPost => domainPost.Id)
+            )
+            .ForMember(
+                infraPost => infraPost.ForumId,
+                opts => opts.MapFrom(domainPost => domainPost.ForumId)
+            )
+            .ForMember(
+                infraPost => infraPost.AuthorId,
+                opts => opts.MapFrom(domainPost => domainPost.Author.Id)
+            )
+            .ForMember(
+                infraPost => infraPost.Title,
+                opts => opts.MapFrom(domainPost => domainPost.Title)
+            )
+            .ForMember(
+                infraPost => infraPost.Content,
+                opts => opts.MapFrom(domainPost => domainPost.Content)
+            )
+            .ForMember(
+                infraPost => infraPost.Deleted,
+                opts => opts.MapFrom(domainPost => domainPost.Deleted)
+            );
     }
 }
