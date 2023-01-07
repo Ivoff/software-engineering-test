@@ -301,6 +301,61 @@ public class ForumUseCase : IForumUseCase
         throw new NotImplementedException();
     }
 
+    public EntityUseCaseResult RemoveBlackListed(Guid forumId, ICollection<BlackListedUseCaseModel> blackListedUsers)
+    {
+        var forum = _forumRepository.Get(forumId);
+        if (forum == null)
+            return new EntityUseCaseResult(false, $"Forum {forumId} does not exist.", null);
+        
+        var results = new List<ForumResult>();
+        foreach(var blackListed in blackListedUsers)
+        {
+            var result = forum.RemoveBlackListed(_appContext.UserId, blackListed.UserId);
+
+            if (result.Value == false)
+                return new EntityUseCaseResult(false, result.Result, null);
+
+            // There is no way to rollback this the way it is.
+            if (_forumRepository.SaveBlackListed(forumId, forum.BlackListedCollection.BlackList.First(x => x.UserId == blackListed.UserId)) == false)
+                return new EntityUseCaseResult(false, "Something wrong happened during data persistance", null);
+
+            results.Add(result);
+        }
+
+        return new EntityUseCaseResult(
+            true, 
+            string.Join(",", results.Select(x => x.Result).ToList()),
+            null
+        );
+    }
+
+    public BlackListedAppServiceModel? GetBlackListed(Guid forumId, Guid blackListedId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return null;
+
+        return forum.BlackList.FirstOrDefault(x => x.Id == blackListedId);
+    }
+
+    public BlackListedAppServiceModel? GetBlackListedByUserId(Guid forumId, Guid userId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return null;
+
+        return forum.BlackList.FirstOrDefault(x => x.UserId == userId);
+    }
+
+    public ICollection<BlackListedAppServiceModel> GetAllBlackListed(Guid forumId)
+    {
+        var forum = _appForumService.GetForum(forumId);
+        if (forum == null)
+            return new List<BlackListedAppServiceModel>();
+
+        return forum.BlackList;
+    }
+
     public EntityUseCaseResult UpdateBlackListed(Guid forumId, Guid userId, bool? canPost, bool? canComment)
     {
         throw new NotImplementedException();

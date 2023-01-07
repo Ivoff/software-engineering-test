@@ -11,5 +11,6 @@ public record ReadModeratorResponse(
     Guid Id,
     Guid ForumId,
     Guid UserId,
+    bool Deleted,
     ICollection<AuthorityResponse> Authorities
 );

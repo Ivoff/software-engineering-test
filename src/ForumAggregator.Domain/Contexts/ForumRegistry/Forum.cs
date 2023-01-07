@@ -575,7 +575,7 @@ public class Forum : IEntity, IAggregateRoot
                 return new ForumResult()
                 {
                     Value = result.Value,
-                    Result = result.Result
+                    Result = result.Value ? blackListedUser.Id.ToString() : result.Result
                 };
             }
 
