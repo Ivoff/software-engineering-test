@@ -5,6 +5,7 @@ using System;
 
 using ForumAggregator.Domain.PostRegistry;
 using ForumAggregator.Domain.Shared.Interfaces;
+using System.Collections.Generic;
 
 public class PostService : IPostService
 {
@@ -64,5 +65,23 @@ public class PostService : IPostService
             result,
             result ? string.Empty : "Something wrong happened during data persistance"
         );
+    }
+
+    public ICollection<PostAppServiceModel> GetAllPosts()
+    {
+        var posts = _postRepository.GetAll();
+        return _mapper.Map<ICollection<Post>, ICollection<PostAppServiceModel>>(posts);
+    }
+
+    public ICollection<PostAppServiceModel> GetAllPostsFromUser(Guid userId)
+    {
+        var posts = _postRepository.GetAllFromUser(userId);
+        return _mapper.Map<ICollection<Post>, ICollection<PostAppServiceModel>>(posts);
+    }
+
+    public ICollection<PostAppServiceModel> GetAllPostsFromForum(Guid forumId)
+    {
+        var posts = _postRepository.GetAllFromForum(forumId);
+        return _mapper.Map<ICollection<Post>, ICollection<PostAppServiceModel>>(posts);
     }
 }

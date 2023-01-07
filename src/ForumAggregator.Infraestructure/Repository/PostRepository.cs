@@ -14,7 +14,7 @@ public class PostRepository : IPostRepository
     private readonly DatabaseContext _dbContext;
     private readonly IMapper _mapper;
 
-    public PostRepository (DatabaseContext dbContext, IMapper mapper)
+    public PostRepository(DatabaseContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
@@ -25,11 +25,11 @@ public class PostRepository : IPostRepository
         var post = _dbContext.Posts.FirstOrDefault(x => x.Id == postId);
         if (post == null)
             return null;
-        
+
         // For some reason AutoMapper is not mapping AuthorId to new PostAuthor(AuthorId, false)
         // Therefore, this here, do not work.
         // return _mapper.Map<ForumAggregator.Domain.PostRegistry.Post>(post);
-        
+
         return ForumAggregator.Domain.PostRegistry.Post.Load(
             post.Id, post.ForumId, post.Title, post.Content, post.Deleted,
             new ForumAggregator.Domain.PostRegistry.PostAuthor(post.AuthorId, false)
@@ -38,12 +38,36 @@ public class PostRepository : IPostRepository
 
     public ICollection<ForumAggregator.Domain.PostRegistry.Post> GetAllFromForum(Guid forumId)
     {
-        throw new NotImplementedException();
+        var posts = _dbContext.Posts.Where(x => x.ForumId == forumId).ToList();
+        
+        return posts.Select(x => {
+            return ForumAggregator.Domain.PostRegistry.Post.Load(
+                x.Id, x.ForumId, x.Title, x.Content, x.Deleted,
+                new ForumAggregator.Domain.PostRegistry.PostAuthor(x.AuthorId, false)
+            );
+        }).ToList();
     }
 
     public ICollection<ForumAggregator.Domain.PostRegistry.Post> GetAllFromUser(Guid userId)
     {
-        throw new NotImplementedException();
+        var posts = _dbContext.Posts.Where(x => x.AuthorId == userId).ToList();
+        
+        return posts.Select(x => {
+            return ForumAggregator.Domain.PostRegistry.Post.Load(
+                x.Id, x.ForumId, x.Title, x.Content, x.Deleted,
+                new ForumAggregator.Domain.PostRegistry.PostAuthor(x.AuthorId, false)
+            );
+        }).ToList();
+    }
+
+    public ICollection<ForumAggregator.Domain.PostRegistry.Post> GetAll()
+    {
+        return  _dbContext.Posts.ToList().Select(x => {
+            return ForumAggregator.Domain.PostRegistry.Post.Load(
+                x.Id, x.ForumId, x.Title, x.Content, x.Deleted,
+                new ForumAggregator.Domain.PostRegistry.PostAuthor(x.AuthorId, false)
+            );
+        }).ToList();
     }
 
     public bool Save(ForumAggregator.Domain.PostRegistry.Post post)

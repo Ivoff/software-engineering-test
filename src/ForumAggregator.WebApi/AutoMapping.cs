@@ -11,5 +11,7 @@ public class AutoMapping : Profile
         CreateMap<ForumAggregator.Application.UseCases.BlackListedUseCaseModel, ForumAggregator.WebApi.Controllers.Forum.BlackListed>().ReverseMap();
         
         CreateMap<ForumAggregator.Application.Services.ForumAppServiceModel, ForumAggregator.WebApi.Controllers.Forum.ReadForumResponse>().ReverseMap();
+
+        CreateMap<ForumAggregator.Application.Services.PostAppServiceModel, ForumAggregator.WebApi.Controllers.Post.ReadPostResponse>().ReverseMap();
     }
 }
