@@ -26,6 +26,9 @@ export class AuthenticationService {
 
     registrate(email: string, name: string, password: string): Observable<any> 
     {
+        this.http.get(this.logoutUrl);
+        localStorage.clear();
+        
         return this.http.post(
             this.registerUrl,
             {
@@ -38,8 +41,6 @@ export class AuthenticationService {
 
     logout(): void 
     {
-        this.http.get(this.logoutUrl);
-        localStorage.clear();
         this.router.navigate(["posts"]);
     }
 }
