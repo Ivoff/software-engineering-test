@@ -25,6 +25,7 @@ export class RegistrationComponent {
     ) { }
 
     submit(): void {
+        this.authService.logout();
         this.authService.registrate(this.email, this.name, this.password).subscribe({
             next: (v) => {
                 localStorage.setItem("logged_in", "true");

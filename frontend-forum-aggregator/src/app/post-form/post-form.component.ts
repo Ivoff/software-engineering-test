@@ -62,8 +62,7 @@ export class PostFormComponent
         this.postService.updatePost(this.postId!, this.title!, this.content!).subscribe({
             next: () => {
                 this.openSnackBar("Post successfully updated.", "Dismiss");
-                this.location.back();
-                // this.router.navigate(["/posts"])
+                this.router.navigate(["/posts"])
             },
             error: error => this.errorService.dealWith(error)
         });   
@@ -80,8 +79,7 @@ export class PostFormComponent
         this.postService.addPost(this.forumId!, this.title!, this.content!).subscribe({
             next: () => {
                 this.openSnackBar("Post successfully created.", "Dismiss");
-                this.location.back();
-                // this.router.navigate(["/posts"])
+                this.router.navigate(["/posts"])
             },
             error: error => this.errorService.dealWith(error)
         });
