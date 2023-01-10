@@ -15,7 +15,9 @@ export class ErrorService {
   dealWith(error: any)
   {
     console.error(error);
-    this.snackBar.open(error.error, "Dismiss");
+    this.snackBar.open(error.error, "Dismiss", {
+      duration: 5000
+    });
     if (error.status == 405)
             this.router.navigate(['/posts']);
   }

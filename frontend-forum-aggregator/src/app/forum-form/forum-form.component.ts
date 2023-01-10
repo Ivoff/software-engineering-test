@@ -48,8 +48,7 @@ export class ForumFormComponent
         this.forumService.updateForum(this.forumId, this.name, this.description).subscribe({
             next: () => {
                 this.openSnackBar("Forum updated successfully.", "Dismiss");
-                this.location.back();
-                // this.router.navigate(["/posts"]);
+                this.router.navigate(["/forums"]);
             },
             error: (error) => this.errorService.dealWith(error)
         })
@@ -59,9 +58,8 @@ export class ForumFormComponent
     {
         this.forumService.addForum(this.name, this.description).subscribe({
             next: () => {
-                this.openSnackBar("Forum created successfully.", "Dismiss");
-                this.location.back();
-                // this.router.navigate(["/posts"]);
+                this.openSnackBar("Forum created successfully.", "Dismiss");                
+                this.router.navigate(["/forums"]);
             },
             error: (error) => this.errorService.dealWith(error)
         })
