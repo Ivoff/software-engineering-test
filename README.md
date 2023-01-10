@@ -10,6 +10,7 @@ The app domain was designed following DDD, it exposes as REST web API and the fr
 * Docker Compose
 
 ## How to execute
+The application will be accesible in http://localhost:8080/
 ```
 softwareengineeringtest/ $ docker-compose up
 ```
