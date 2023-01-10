@@ -8,7 +8,7 @@
     </div>
     <div></div>
     <div class="main-content p-2 w-50">
-        <mat-card *ngIf="forums.length == 0" class="h-100">
+        <mat-card [appearance]="'outlined'" *ngIf="forums.length == 0" class="h-100">
             <div class="m-auto">
                 <mat-icon icon-display class="icon-display" matSuffix>playlist_remove</mat-icon>
             </div>

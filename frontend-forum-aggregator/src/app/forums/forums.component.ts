@@ -58,7 +58,9 @@ export class ForumsComponent
 
     openSnackBar(message: string, action: string)
     {
-        this.snackBar.open(message, action);
+        this.snackBar.open(message, action, {
+			duration: 5000
+		});
     }
 
     ngOnInit()

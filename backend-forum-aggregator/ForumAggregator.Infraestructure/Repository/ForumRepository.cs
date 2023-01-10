@@ -233,7 +233,7 @@ public class ForumRepository : IForumRepository
     public ICollection<Domain.ForumRegistry.Forum> GetLike(string searchString)
     {
         return _dbContext.Forums
-            .Where(x => x.Name.Contains(searchString))
+            .Where(x => x.Name.Contains(searchString) && !x.Deleted)
             .Select(x => _mapper.Map<Domain.ForumRegistry.Forum>(x))
             .ToList();
     }
