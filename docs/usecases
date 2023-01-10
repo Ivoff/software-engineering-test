@@ -1,138 +1,137 @@
 Use Cases and Business Rules:
 
 Use Cases: -
-Acões: *
+Actions: *
 Business Rules: #
 
 ############################################################################################ 
-Usuários - User Registration
+Users - User Registration
 ############################################################################################ 
 
-- Usuário Registra Conta
-  * Usuário insere Nome, E-mail e Senha.
-    # Nome deve ser único.
-    # E-mail deve ser válido.
-    # Senha deve ser segura.
+- User Register Account
+  * User insert Name, E-mail and Passord.
+    # Name must be unique.
+    # E-mail must be valid.
+    # Password must be secure.
 
-- Usuário Atualiza Conta
-  * Usuário pode alterar Nome, e/ou E-mail, e/ou Senha.
-    # Nome deve ser único.
-    # E-mail deve ser válido.
-    # Senha deve ser segura.
+- User Update Account
+  * User can alter Name, and/or E-mail, and/or Password
+    # Name must be unique.
+    # E-mail must be valid.
+    # Password must be secure
 
-- Usuário Deleta Conta
-  * Fórums são deletados.
-  * Posts são deletados.
-  * Comentários são deletados.
-  * Moderadores são deletados.    
+- User Delete Account
+  * Forums are deleted.
+  * Posts are deleted.
+  * Comments are deleted.
+  * Moderators are deleted.
 
 ############################################################################################ 
-Fórums - Forum Context
+Forums - Forum Context
 ############################################################################################ 
 
-- Usuário Cria Fórum
-  * Usuário insere Nome e Descrição do Fórum.
-    # Nome deve ser único. -- (UseCase Logic)
-    # Nome não deve ser vazio -- (UseCase Logic)
-    # Descrição não deve ser vazia. -- (Domain Logic)
-    # Usuário recebe status de Moderação com todas as Autoridades. (Domain Logic)
+- User Creates Forum
+  * User insert Name and Forum's Description
+    # Name must be unique. -- (UseCase Logic)
+    # Name must not be empty. -- (UseCase Logic)
+    # Description must not be empty -- (Domain Logic)
+    # User receives Moderation status with all the Authorities. (Domain Logic)
 
-- Usuário Atualiza Fórum
-  * Usuário pode alterar Nome e/ou Descrição do Fórum.
-    # Nome deve ser único. -- (UseCase Logic)
-    # Descrição não deve ser vazia. -- (UseCase Logic)
-    # Usuário deve ser Moderador. -- (Domain Logic)
-    # Usuário deve ter permissão de alterar. -- (Domain Logic)
+ - User Update Forum
+  * User can alter Name and/or Forum's Description.
+    # Name must be unique. -- (UseCase Logic)
+    # Description must not be empty. -- (UseCase Logic)
+    # User must be a Moderator. -- (Domain Logic)
+    # User must have permission to alter. -- (Domain Logic)
 
 - Usuário Deleta Fórum
-  * Moderadores são deletados.
-  * Posts são deletados.
-  * Comentários são deletados.
-  * BlackList é deletada.
-    # Usuário deve ser Moderador.
-    # Usuário deve ter a Autoridade de deletar o Fórum.
-    # Não pode haver Moderadores que tenham a Autoridade de deletar o Fórum.
+  * Moderators are deleted.
+  * Posts are deleted.
+  * Comments are deleted.
+  * Blacklist is deleted.
+    # User must be a Moderator.
+    # User must have and Authority to delete the Forum.
+    # There cannot have Moderators that have the Authority to delete the Forum.
   
 ############################################################################################ 
-Moderadores - Forum Context
+Moderators - Forum Context
 ############################################################################################ 
 
-- Moderador Adiciona Moderador a um Fórum
-  * Moderador insere Nome do usuário para se tornar moderador.
-  * Moderador seleciona as Autoridades que o Moderador terá.
-    # Moderador deve ter Autoridade de adicionar Moderadores ao Fórum em questão.
+- Moderator Adds Moderator to Forum
+  * Moderator inserts User Name that will become Moderator.
+  * Moderator selects the Authorities that the Moderator will have.
+    # Moderator must have add Moderators Authority to the Forum.
     # Moderador aspirante a Moderador deve existir.
 
 - Moderador Deixa de Ser Moderador em um Fórum
   * Moderador é deletado do Fórum.
-    # Moderador não pode ser o único Moderador com Autoridade de deletar o Fórum.
-    # Moderador deve ser Moderador do Fórum.
-    # Moderador não deve ser o dono do Fórum.
+    # Moderador não pode ser o único Moderador com Autoridade de deletar o Fórum in question.
+    # Moderator must be a Forum Moderator.
+    # Moderator must not be the Forum Owner.
 
-- Moderador Deleta Moderador de Fórum
-  * Moderador selecionado é deletado do Fórum.
-    # Moderador deletando deve ser Moderador.
-    # Moderador a perder Moderação deve ser Moderador.
-    # Moderador deve ter Autoridade de deletar Moderadores.
+- Moderator DeleteModerator from Forum
+  * Moderator selected is deleted from Forum.
+    # Moderator deleting must be a Moderator.
+    # Moderator that loses Moderator must be a Moderator.
+    # Moderator must have Authority to delete Moderators.
 
-- Moderador Adiciona Usuário a BlackList de Fórum
-  * Moderador insere Usuário.
-  * Moderador seleciona restrições do usuário.
-    # Moderador deve ter Autoridade(s) correspondente(s) a(s) restrição(ões)
-    # Usuário deve existir.
+- Moderator Add User to Forum's BlackList
+  * Moderator inserts User.
+  * Moderator selects User's restriction.
+    # Moderator must have Authority(ies) matching the restriction(s).
+    # User must exist.
 
-- Moderador Altera Usuário na BlackList de Fórum
-  * Moderador seleciona Usuário.
-  * Moderador seleciona restrições.
-    # Moderador deve ter Autoridade(s) correspondente(s) a(s) restrição(ões).
-    # Restrições do Usuário não podem ficar vazias.
+- Moderator Alter User in the Forum's BlackList
+  * Moderator selects User.
+  * Moderator selects restrictions.
+    # Moderator must have Authority(ies) matching the restriction(s).
+    # Restrictions form User can't be empty.
 
-- Moderador Remove Usuário da BlackList de Fórum
-  * Usuário da BlackList é deletado.  
-    # Moderador deve ter todas as Autoridades de BlackList.
+- Moderator Removes User from Forum's Blacklist
+  * User from Blacklist is deleted.
+    # Moderator must have all the authorities related to Blacklist.
 
-- Moderador Remove Post de Fórum
-  * Post é Deletado do Fórum.
-    # Moderador deve ter Autoridade de deletar Posts.
+- Moderator Removes Post from Forum
+  * Post is Deleted from Forum.
+    # Moderator must have Authorty do delete Posts.
 
-- Moderador Remove Comentário de Post
-  * Comentário é Removido de Post.
-    # Moderador deve ter Autoridade de deletar Comentários.
-    # Comentário deve 
-
-############################################################################################ 
-Posts - Usuários
-############################################################################################ 
-
-- Usuário Posta em Fórum
-  * Usuário insere Título e Conteúdo do post.
-    # Usuário deve ter o privilégio de postar.
-    # Título não pode ser vazio.
-    # Conteúdo não pode ser vazio.
-
-- Usuário Atualiza Post em Fórum
-  * Usuário pode alterar Título e/ou Conteúdo do Post.
-    # Usuário deve ser o autor do post.
-    # Título não pode ser vazio.
-    # Post não pode ser vazio.
-
-- Usuário Deleta Post em Fórum
-  * Post do Usuário é deletado do Fórum em questão.
-    # Usuário deve ser autor do Post.
+- Moderator Removes Comment from Post
+  * Comment is Removed from Post.
+    # Moderator must have Authority do delete Comments.
 
 ############################################################################################ 
-Comentários
+Posts - Users
 ############################################################################################ 
 
-- Usuário Comenta em Post
-  * Usuário insere Conteúdo.
-    # Conteúdo não pode ser vazio. -- (Domain Logic)
-    # Usuário deve ter o privilégio de comentar. -- (Domain Logic)
+- User Post in Forum
+  * User inserts Title and Post's Content.
+    # User must have the privilege to post.
+    # Title can not be empty.
+    # Content can not be empty.
+
+- User Update Posts in Forum.
+  * User can alter Title and/or Content from Post.
+    # Usuário deve ser o autor do post. User must be the Post's Author.
+    # Título não pode ser vazio. Title must not be empty.
+    # Post can not be empty.
+
+- User Deletes Post from Forum.
+  * Post from User is deleted from Forum in question.
+    # User must be Post's Author.
+
+############################################################################################ 
+Comments
+############################################################################################ 
+
+- User Comments in Post
+  * User inserts Content.
+    # Content can not be empty. -- (Domain Logic)
+    # User must have the privilege to comment. -- (Domain Logic)
   
-- Usuário Deleta Comentário em Post
-  * Comentário do Usuário é deletado.
-    # Usuário deve ser o autor do Comentário.
+- User Delete Comment in Post
+  * User's Comment is deleted.
+    # User must be the Comment's Author.
 
-- Usuário Atualiza Comentário em Post
-  * Usuário pode alterar Conteúdo do Comentário.
-    # Usuário de ser autor do Comentário
+- User Updates Comments in Posts
+  * User can alter Comment's Content.
+    # User must be Comment's Author.
