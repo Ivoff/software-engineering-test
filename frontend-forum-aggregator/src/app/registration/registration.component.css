@@ -1,0 +1,10 @@
+.main-div {
+    height: 93vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.inner-div {
+    width: 30vw;
+}

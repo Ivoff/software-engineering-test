@@ -1,0 +1,91 @@
+<div class="container">
+    <div class="w-75 p-2 pt-4">
+        <mat-card [appearance]="'raised'">
+            <span class="h3 p-2 ps-4 pt-4">
+                {{ sameUser ? currentUserName + ' Forums\'' : 'Forums' }}
+            </span>
+        </mat-card>
+    </div>
+    <div></div>
+    <div class="main-content p-2 w-50">
+        <mat-card *ngIf="forums.length == 0" class="h-100">
+            <div class="m-auto">
+                <mat-icon icon-display class="icon-display" matSuffix>playlist_remove</mat-icon>
+            </div>
+        </mat-card>
+        <mat-card [appearance]="'outlined'" *ngFor="let forum of forums" class="mb-3">
+            <mat-card-header>
+                <mat-card-subtitle>
+                    Ownerd by <span class="fw-bold text-dark" role="button" [routerLink]="['/user', forum.ownerId , 'forums']">{{ forum.ownerName }}</span>
+                </mat-card-subtitle>
+            </mat-card-header>
+            <div role="button" [routerLink]="['/forum', forum.id, 'posts']">
+                <mat-card-content class="">
+                    <mat-card-title class="mb-2">{{ forum.name }}</mat-card-title>  
+                    {{ forum.description }}
+                    <mat-divider *ngIf="sameUser"></mat-divider>
+                </mat-card-content>
+            </div>
+            <mat-card-actions *ngIf="sameUser">
+                <div>
+                    <button 
+                        class="me-3" 
+                        mat-button mat-stroked-button 
+                        color="primary"
+                        [routerLink]="['/forum', 'update', forum.id]"
+                    >
+                        EDIT
+                    </button>
+                    <button 
+                        mat-button mat-stroked-button 
+                        color="warn"
+                        (click)="deleteForum(forum.id)"
+                    >
+                        DELETE
+                    </button>
+                </div>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+    <div class="w-25 p-2">
+
+        <mat-card [appearance]="'outlined'" class="">
+            <mat-card-header>
+                <mat-card-title>
+                    <span class="h3 m-auto mb-3">Create stuff</span>
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="d-flex flex-column pt-3">
+                    <button routerLink="/post/create" class="btn btn-primary mb-1">
+                        <span class="text-light">Create Post</span>
+                    </button>
+                    <button routerLink="/forum/create" class="btn btn-primary mt-1">
+                        <span class="text-light">Create Forum</span>
+                    </button>
+                </div>
+            </mat-card-content>
+            <mat-card-actions>
+            </mat-card-actions>
+        </mat-card>
+        <mat-card [appearance]="'outlined'" class="mt-3">
+            <mat-card-header>
+                <mat-card-title>
+                    <span class="h3 m-auto mb-3">Made Stuff</span>
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="d-flex flex-column pt-3">
+                    <button routerLink="/posts" class="btn btn-primary mb-1">
+                        <span class="text-light">Posts</span>
+                    </button>
+                    <button routerLink="/forums" class="btn btn-primary mt-1">
+                        <span class="text-light">Forums</span>
+                    </button>
+                </div>
+            </mat-card-content>
+            <mat-card-actions>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>

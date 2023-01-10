@@ -1,0 +1,40 @@
+services:
+  postgres_database: # psql --user=postgres --host=database --port=5432
+    image: postgres:latest
+    hostname: postgres_database
+    ports:
+      - "5000:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: forum_aggregator
+    networks:
+      - app-net
+  
+  backend:
+      build:
+        context: backend-forum-aggregator
+        dockerfile: dockerfile
+      hostname: backend
+      ports:
+        - "8000:80"
+      networks:
+        - app-net
+      depends_on:
+        - postgres_database
+  
+  frontend:
+      build:
+        context: frontend-forum-aggregator
+        dockerfile: dockerfile
+      hostname: frontend
+      ports:
+        - "8080:80"
+      networks:
+        - app-net
+      depends_on:
+        - backend
+
+networks:
+  app-net:
+    driver: bridge

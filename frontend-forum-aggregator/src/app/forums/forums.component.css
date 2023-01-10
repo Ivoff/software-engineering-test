@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    justify-content:center;
+    flex-wrap: wrap;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #3f51b5 !important;
+}
+
+.btn-primary:hover {
+    background-color: #354395 !important;
+}
+
+.icon-display {
+    transform: scale(5);
+ }

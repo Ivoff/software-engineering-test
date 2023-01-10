@@ -1,0 +1,73 @@
+<div class="main-div">
+    <div class="inner-div">
+        <mat-card>
+            <mat-card-content class="">
+                <form (ngSubmit)="submit()" #postCreateForm="ngForm" class="example-form d-flex flex-column ps-5 pe-5">
+
+                    <mat-card-title class="mb-5 mt-3">
+                        <span class="h3 m-auto mb-3">Create a new Post</span>
+                    </mat-card-title>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Select a Forum</mat-label>
+                        <input 
+                            type="text" 
+                            placeholder="Pick one" 
+                            aria-label="Forums" 
+                            matInput 
+                            [formControl]="forumField"
+                            [matAutocomplete]="auto"
+                            name="forumName"
+                            required 
+                            [readonly]="update"
+                        >
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let forum of forumOptions | async" [value]="forum.name">
+                                {{ forum.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Title</mat-label>
+                        <input matInput name="title" name="title" [(ngModel)]="title" required>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Content of the Post here.</mat-label>
+                        <textarea 
+                            matInput 
+                            placeholder=""
+                            required 
+                            name="content"
+                            [(ngModel)]="content"
+                        >
+                        </textarea>
+                    </mat-form-field>
+                    <div class="d-flex justify-content-between">
+                        <button 
+                            class="mt-3 w-50" 
+                            type="submit" 
+                            mat-flat-button 
+                            color="primary"
+                            [disabled]="!postCreateForm.form.valid"
+                        >
+                            {{ update? "Update Post" : "Post" }}
+                        </button>
+                        <button 
+                            class="mt-3" 
+                            mat-flat-button 
+                            color="warn"
+                            type="button"
+                            routerLink="/forums"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </mat-card-content>
+            <mat-card-actions>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>
